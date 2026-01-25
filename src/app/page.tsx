@@ -34,6 +34,14 @@ const LettersMarquee = dynamic(
   { ssr: false }
 );
 
+const CountdownSection = dynamic(
+  () =>
+    import('@/components/countdown').then(
+      (mod) => mod.CountdownSection
+    ),
+  { ssr: false }
+);
+
 export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -58,6 +66,9 @@ export default function HomePage() {
 
           {/* Letters marquee section */}
           <LettersMarquee />
+
+          {/* Countdown section */}
+          <CountdownSection />
 
           <footer
             className="py-12 text-center"
