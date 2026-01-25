@@ -7,7 +7,7 @@ export const copy = {
   hero: {
     quote: '"Pra cada vez que eu precisei de palavras e não as pude encontrar, eu fiz uma carta. Todas elas são de adeus."',
     cta: 'Escreva sua carta',
-    albumInfo: 'Novo álbum: Carta de Adeus',
+    albumInfo: 'Fresno • Novo Álbum',
   },
   form: {
     placeholder: 'Escreva sua carta de adeus...',
