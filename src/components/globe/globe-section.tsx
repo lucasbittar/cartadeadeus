@@ -43,7 +43,7 @@ export function GlobeSection() {
   });
 
   return (
-    <section className="relative py-16 md:py-16 px-4">
+    <section className="relative py-16 md:py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
