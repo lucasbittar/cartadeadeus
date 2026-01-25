@@ -1,54 +1,90 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { LetterCard } from './letter-card';
 import type { Letter } from '@/types';
 
 interface MarqueeRowProps {
   letters: Letter[];
   direction?: 'left' | 'right';
-  speed?: number; // seconds for full cycle
+  speed?: number;
   startTyping?: boolean;
 }
 
 export function MarqueeRow({
   letters,
-  direction = 'left',
-  speed = 70,
   startTyping = false,
 }: MarqueeRowProps) {
-  const [isPaused, setIsPaused] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
-  // Triple the letters for seamless looping
-  const tripleLetters = useMemo(() => {
-    return [...letters, ...letters, ...letters];
-  }, [letters]);
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  }, []);
 
-  const animationClass =
-    direction === 'left' ? 'animate-marquee-left' : 'animate-marquee-right';
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Scroll speed multiplier
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  }, [isDragging, startX, scrollLeft]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    const x = e.touches[0].pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  }, [isDragging, startX, scrollLeft]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
   return (
     <div
-      className="relative overflow-hidden"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      ref={scrollRef}
+      className={`
+        flex gap-6 overflow-x-auto scrollbar-hide pb-4
+        ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
+      `}
+      style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+        WebkitOverflowScrolling: 'touch',
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
-      <div
-        className={`flex gap-6 ${animationClass}`}
-        style={{
-          '--marquee-duration': `${speed}s`,
-          animationPlayState: isPaused ? 'paused' : 'running',
-        } as React.CSSProperties}
-      >
-        {tripleLetters.map((letter, index) => (
-          <LetterCard
-            key={`${letter.id}-${index}`}
-            letter={letter}
-            delay={index * 150}
-            startTyping={startTyping}
-          />
-        ))}
-      </div>
+      {letters.map((letter, index) => (
+        <LetterCard
+          key={letter.id}
+          letter={letter}
+          delay={index * 150}
+          startTyping={startTyping}
+        />
+      ))}
     </div>
   );
 }
