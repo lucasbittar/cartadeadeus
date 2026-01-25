@@ -2,7 +2,7 @@
 
 Interactive hotsite for Fresno's album **"Carta de Adeus"** where fans can write goodbye letters that are visualized on a 3D globe.
 
-![Fresno - Carta de Adeus](public/fresno-bg.jpg)
+![Fresno - Carta de Adeus](public/screenshot-1.jpg)
 
 ## About
 
@@ -112,7 +112,6 @@ src/
 
 - **Hashtag**: #CartaDeAdeus
 - **Band**: [@fresnorock](https://twitter.com/fresnorock)
-- **Lucas Silveira**: [@lucasfresno](https://twitter.com/lucasfresno)
 
 ## License
 
