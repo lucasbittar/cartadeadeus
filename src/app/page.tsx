@@ -26,6 +26,14 @@ const FallingPapers = dynamic(
   { ssr: false }
 );
 
+const LettersMarquee = dynamic(
+  () =>
+    import('@/components/letters').then(
+      (mod) => mod.LettersMarquee
+    ),
+  { ssr: false }
+);
+
 export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -47,6 +55,9 @@ export default function HomePage() {
           style={{ backgroundColor: 'transparent' }}
         >
           <GlobeSection />
+
+          {/* Letters marquee section */}
+          <LettersMarquee />
 
           <footer
             className="py-12 text-center"

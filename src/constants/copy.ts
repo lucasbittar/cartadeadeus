@@ -38,4 +38,11 @@ export const copy = {
     fresnoHandle: '@fresnorock',
     lucasHandle: '@lucasfresno',
   },
+  marquee: {
+    title: 'Cartas ao vento',
+    subtitle: 'Palavras que ecoam pelo mundo',
+    emptyState: 'As primeiras cartas estão a caminho...',
+    anonymous: 'Anônimo',
+    from: 'de',
+  },
 } as const;
