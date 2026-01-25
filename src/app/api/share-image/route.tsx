@@ -7,6 +7,8 @@ import { TextOverlayStory } from '@/lib/satori/templates/text-overlay-story';
 import { TextOverlayOG } from '@/lib/satori/templates/text-overlay-og';
 import type { Letter } from '@/types';
 
+// Body size limits configured at platform level (vercel.json) if needed
+
 async function loadFont(url: string): Promise<ArrayBuffer> {
   const response = await fetch(url);
   if (!response.ok) {
