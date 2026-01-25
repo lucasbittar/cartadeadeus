@@ -20,22 +20,30 @@ export function ShareModal() {
     setSubmittedLetter(null);
   };
 
+  const generateImage = async (): Promise<Blob | null> => {
+    if (!submittedLetter) return null;
+
+    const response = await fetch('/api/share-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ letter: submittedLetter, format: imageFormat }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to generate image');
+    }
+
+    return response.blob();
+  };
+
   const handleDownload = async () => {
     if (!submittedLetter) return;
 
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/share-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ letter: submittedLetter, format: imageFormat }),
-      });
+      const blob = await generateImage();
+      if (!blob) return;
 
-      if (!response.ok) {
-        throw new Error('Failed to generate image');
-      }
-
-      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -46,6 +54,37 @@ export function ShareModal() {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading image:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleNativeShare = async () => {
+    if (!submittedLetter) return;
+
+    setIsGenerating(true);
+    try {
+      const blob = await generateImage();
+      if (!blob) return;
+
+      const file = new File([blob], `carta-de-adeus-${submittedLetter.id}.png`, { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file] });
+      } else {
+        // Fallback to download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `carta-de-adeus-${submittedLetter.id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      // User cancelled or error
+      console.error('Share error:', error);
     } finally {
       setIsGenerating(false);
     }
@@ -128,7 +167,34 @@ export function ShareModal() {
           </button>
         </div>
 
-        <div className="space-y-3">
+        {/* Mobile: Native Share Button */}
+        <div className="md:hidden space-y-3">
+          <Button
+            onClick={handleNativeShare}
+            isLoading={isGenerating}
+            className="w-full"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2"
+            >
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <polyline points="16 6 12 2 8 6" />
+              <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+            Compartilhar
+          </Button>
+        </div>
+
+        {/* Desktop: Download + X Buttons */}
+        <div className="hidden md:block space-y-3">
           <Button
             onClick={handleDownload}
             isLoading={isGenerating}

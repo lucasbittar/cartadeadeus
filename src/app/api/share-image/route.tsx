@@ -5,7 +5,10 @@ import path from 'path';
 import fs from 'fs/promises';
 import { TextOverlayStory } from '@/lib/satori/templates/text-overlay-story';
 import { TextOverlayOG } from '@/lib/satori/templates/text-overlay-og';
+import { CountdownOverlayStory } from '@/lib/satori/templates/countdown-overlay-story';
 import type { Letter } from '@/types';
+
+type ShareFormat = 'story' | 'og' | 'countdown';
 
 // Body size limits configured at platform level (vercel.json) if needed
 
@@ -17,8 +20,10 @@ async function loadFont(url: string): Promise<ArrayBuffer> {
   return response.arrayBuffer();
 }
 
-async function loadBackgroundImage(format: 'story' | 'og', width: number, height: number): Promise<Buffer> {
-  const imagePath = path.join(process.cwd(), 'public', `share-bg-${format}.png`);
+async function loadBackgroundImage(format: ShareFormat, width: number, height: number): Promise<Buffer> {
+  // Countdown uses the story background
+  const bgFormat = format === 'countdown' ? 'story' : format;
+  const imagePath = path.join(process.cwd(), 'public', `share-bg-${bgFormat}.png`);
   try {
     const imageBuffer = await fs.readFile(imagePath);
     // Resize background to exact dimensions to ensure composite works
@@ -38,19 +43,36 @@ async function loadBackgroundImage(format: 'story' | 'og', width: number, height
   }
 }
 
+interface CountdownData {
+  days: number;
+  hours: number;
+  minutes: number;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { letter, format = 'story' } = body as {
-      letter: Letter;
-      format?: 'story' | 'og';
+    const { letter, format = 'story', countdown } = body as {
+      letter?: Letter;
+      format?: ShareFormat;
+      countdown?: CountdownData;
     };
 
-    if (!letter || !letter.content) {
-      return NextResponse.json(
-        { error: 'Letter is required' },
-        { status: 400 }
-      );
+    // Validate based on format
+    if (format === 'countdown') {
+      if (!countdown || typeof countdown.days !== 'number') {
+        return NextResponse.json(
+          { error: 'Countdown data is required for countdown format' },
+          { status: 400 }
+        );
+      }
+    } else {
+      if (!letter || !letter.content) {
+        return NextResponse.json(
+          { error: 'Letter is required' },
+          { status: 400 }
+        );
+      }
     }
 
     // Load fonts
@@ -59,19 +81,28 @@ export async function POST(request: NextRequest) {
       loadFont('https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPQ.ttf'),
     ]);
 
-    const isStory = format === 'story';
-    const width = isStory ? 1080 : 1200;
-    const height = isStory ? 1920 : 630;
+    const isStoryFormat = format === 'story' || format === 'countdown';
+    const width = isStoryFormat ? 1080 : 1200;
+    const height = isStoryFormat ? 1920 : 630;
 
     // Load the static background image (resized to exact dimensions)
     const backgroundBuffer = await loadBackgroundImage(format, width, height);
 
     // Create text-only overlay with Satori (transparent background)
-    const textElement = isStory ? (
-      <TextOverlayStory letter={letter} />
-    ) : (
-      <TextOverlayOG letter={letter} />
-    );
+    let textElement;
+    if (format === 'countdown' && countdown) {
+      textElement = (
+        <CountdownOverlayStory
+          days={countdown.days}
+          hours={countdown.hours}
+          minutes={countdown.minutes}
+        />
+      );
+    } else if (format === 'story') {
+      textElement = <TextOverlayStory letter={letter!} />;
+    } else {
+      textElement = <TextOverlayOG letter={letter!} />;
+    }
 
     const textSvg = await satori(textElement, {
       width,
@@ -109,10 +140,14 @@ export async function POST(request: NextRequest) {
       .png({ quality: 90 })
       .toBuffer();
 
+    const filename = format === 'countdown'
+      ? 'carta-de-adeus-countdown.png'
+      : `carta-de-adeus-${letter!.id}.png`;
+
     return new NextResponse(new Uint8Array(compositeBuffer), {
       headers: {
         'Content-Type': 'image/png',
-        'Content-Disposition': `attachment; filename="carta-de-adeus-${letter.id}.png"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     });
