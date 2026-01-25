@@ -3,21 +3,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Modal } from '@/components/ui/modal';
-import { Button } from '@/components/ui/button';
 import { useLetterStore } from '@/store/letter-store';
 import { formatDate } from '@/lib/utils';
-import { copy } from '@/constants/copy';
 
 export function LetterPreviewModal() {
-  const { selectedLetter, setSelectedLetter, setSubmittedLetter, setShareModalOpen } = useLetterStore();
+  const { selectedLetter, setSelectedLetter } = useLetterStore();
 
   if (!selectedLetter) return null;
-
-  const handleShare = () => {
-    setSubmittedLetter(selectedLetter);
-    setSelectedLetter(null);
-    setShareModalOpen(true);
-  };
 
   return (
     <Modal
@@ -59,12 +51,6 @@ export function LetterPreviewModal() {
               : selectedLetter.author || 'Anônimo'}
           </span>
           <span>{formatDate(selectedLetter.created_at)}</span>
-        </div>
-
-        <div className="pt-4 border-t border-foreground/10">
-          <Button variant="secondary" size="sm" onClick={handleShare}>
-            {copy.share.title}
-          </Button>
         </div>
       </motion.div>
     </Modal>
