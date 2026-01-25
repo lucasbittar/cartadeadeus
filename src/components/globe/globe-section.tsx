@@ -13,9 +13,12 @@ const GlobeScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[500px] md:h-[600px] flex items-center justify-center">
-        <div className="text-foreground/50 text-sm animate-pulse">
-          {copy.globe.loading}
+      <div className="w-full h-[500px] md:h-[1000px] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 rounded-full border-2 border-burgundy/20 border-t-burgundy animate-spin" />
+          <div className="text-foreground/40 text-xs">
+            {copy.globe.loading}
+          </div>
         </div>
       </div>
     ),
@@ -40,13 +43,13 @@ export function GlobeSection() {
   });
 
   return (
-    <section className="relative py-16 px-4">
+    <section className="relative py-16 md:py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="max-w-4xl mx-auto text-center mb-8"
+        className="max-w-4xl mx-auto text-center mb-12"
       >
         <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-4">
           {copy.globe.title}

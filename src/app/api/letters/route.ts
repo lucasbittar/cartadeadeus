@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import type { LetterInput } from '@/types';
+import { checkRateLimit, isRateLimitEnabled } from '@/lib/rate-limit';
+import { letterInputSchema, formatZodError } from '@/lib/validation';
+import { moderateContent } from '@/lib/moderation';
+
+// Body size limit enforced via Zod validation (content max 280 chars, city max 255)
+// For platform-level limits, configure in vercel.json or next.config.js
 
 export async function GET() {
   try {
@@ -20,7 +25,13 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(data || []);
+    // Return with cache headers for Vercel edge caching
+    // 30-second cache with stale-while-revalidate for up to 60 seconds
+    return NextResponse.json(data || [], {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+      },
+    });
   } catch (error) {
     console.error('Error in GET /api/letters:', error);
     return NextResponse.json(
@@ -32,32 +43,56 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: LetterInput = await request.json();
+    // Rate limiting check
+    const rateLimitResult = await checkRateLimit(request);
 
-    if (!body.content || body.content.trim().length === 0) {
+    if (!rateLimitResult.success) {
       return NextResponse.json(
-        { error: 'Content is required' },
+        {
+          error: 'Você atingiu o limite de cartas. Tente novamente mais tarde.',
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((rateLimitResult.reset - Date.now()) / 1000)),
+            'X-RateLimit-Limit': String(rateLimitResult.limit),
+            'X-RateLimit-Remaining': String(rateLimitResult.remaining),
+            'X-RateLimit-Reset': String(rateLimitResult.reset),
+          },
+        }
+      );
+    }
+
+    // Parse and validate request body
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
         { status: 400 }
       );
     }
 
-    if (body.content.length > 280) {
+    // Validate with Zod schema
+    const validation = letterInputSchema.safeParse(body);
+
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Content must be 280 characters or less' },
+        { error: formatZodError(validation.error) },
         { status: 400 }
       );
     }
 
-    if (typeof body.lat !== 'number' || typeof body.lng !== 'number') {
-      return NextResponse.json(
-        { error: 'Valid coordinates are required' },
-        { status: 400 }
-      );
-    }
+    const validatedData = validation.data;
 
-    if (!body.city || body.city.trim().length === 0) {
+    // Content moderation
+    const moderation = moderateContent(validatedData.content);
+
+    if (moderation.isBlocked) {
       return NextResponse.json(
-        { error: 'City is required' },
+        { error: moderation.reason },
         { status: 400 }
       );
     }
@@ -67,12 +102,12 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('letters')
       .insert({
-        content: body.content.trim(),
-        author: body.is_anonymous ? null : body.author?.trim() || null,
-        is_anonymous: body.is_anonymous,
-        lat: body.lat,
-        lng: body.lng,
-        city: body.city.trim(),
+        content: validatedData.content,
+        author: validatedData.is_anonymous ? null : validatedData.author,
+        is_anonymous: validatedData.is_anonymous,
+        lat: validatedData.lat,
+        lng: validatedData.lng,
+        city: validatedData.city,
       })
       .select()
       .single();
@@ -85,7 +120,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data, { status: 201 });
+    // Include rate limit info in success response
+    const headers: Record<string, string> = {
+      'X-RateLimit-Limit': String(rateLimitResult.limit),
+      'X-RateLimit-Remaining': String(rateLimitResult.remaining),
+    };
+
+    // Only add reset header if rate limiting is enabled
+    if (isRateLimitEnabled()) {
+      headers['X-RateLimit-Reset'] = String(rateLimitResult.reset);
+    }
+
+    return NextResponse.json(data, {
+      status: 201,
+      headers,
+    });
   } catch (error) {
     console.error('Error in POST /api/letters:', error);
     return NextResponse.json(

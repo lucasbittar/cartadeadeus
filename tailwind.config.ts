@@ -36,6 +36,8 @@ const config: Config = {
         'float-slow': 'float 8s ease-in-out infinite',
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
+        'marquee-left': 'marqueeLeft var(--marquee-duration, 70s) linear infinite',
+        'marquee-right': 'marqueeRight var(--marquee-duration, 70s) linear infinite',
       },
       keyframes: {
         float: {
@@ -49,6 +51,14 @@ const config: Config = {
         slideUp: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        marqueeLeft: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-33.333%)' },
+        },
+        marqueeRight: {
+          '0%': { transform: 'translateX(-33.333%)' },
+          '100%': { transform: 'translateX(0)' },
         },
       },
     },

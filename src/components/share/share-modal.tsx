@@ -53,7 +53,7 @@ export function ShareModal() {
 
   const handleShareX = () => {
     const text = encodeURIComponent(
-      `"${submittedLetter.content.slice(0, 200)}${submittedLetter.content.length > 200 ? '...' : ''}"\n\n${copy.social.hashtag} ${copy.social.fresnoHandle}`
+      `"${submittedLetter.content.slice(0, 200)}${submittedLetter.content.length > 200 ? '...' : ''}"\n\n${copy.social.hashtag} ${copy.social.fresnoHandle}\ncartadeadeus.cc`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   };

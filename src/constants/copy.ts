@@ -38,4 +38,28 @@ export const copy = {
     fresnoHandle: '@fresnorock',
     lucasHandle: '@lucasfresno',
   },
+  marquee: {
+    title: 'Cartas ao vento',
+    subtitle: 'Palavras que ecoam pelo mundo',
+    emptyState: 'As primeiras cartas estão a caminho...',
+    anonymous: 'Anônimo',
+    from: 'de',
+  },
+  countdown: {
+    date: '18 de Abril de 2026',
+    tagline: 'A contagem começou.',
+    subtitle: 'Carta de Adeus ao vivo. Pela primeira vez.',
+    shareButton: 'Compartilhar a espera',
+    units: {
+      days: 'dias',
+      hours: 'horas',
+      minutes: 'min',
+      seconds: 'seg',
+    },
+    tweet: {
+      template: 'Faltam {days} dias, {hours} horas e {minutes} minutos para @fresnorock ao vivo 🎸\n\nA contagem começou. #CartaDeAdeus\n\ncartadeadeus.cc',
+      templateShort: 'Faltam apenas {hours} horas e {minutes} minutos para @fresnorock ao vivo 🎸\n\nHoje é o dia. #CartaDeAdeus\n\ncartadeadeus.cc',
+    },
+    expired: 'O momento chegou.',
+  },
 } as const;

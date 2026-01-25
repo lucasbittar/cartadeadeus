@@ -9,8 +9,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000,
+            // Align staleTime with the refetchInterval used for letters (30s)
+            // This ensures data is considered fresh for the duration of the polling interval
+            staleTime: 30 * 1000,
+            // Prevent refetch on window focus since we're polling
             refetchOnWindowFocus: false,
+            // Retry failed requests up to 3 times with exponential backoff
+            retry: 3,
+            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
           },
         },
       })

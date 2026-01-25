@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  getCachedCitySearch,
+  setCachedCitySearch,
+  getCachedReverseGeocode,
+  setCachedReverseGeocode,
+  type GeocodeResult,
+} from '@/lib/geocode-cache';
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -49,6 +56,16 @@ export async function GET(request: NextRequest) {
 }
 
 async function handleCitySearch(query: string) {
+  // Check cache first
+  const cached = getCachedCitySearch(query);
+  if (cached) {
+    return NextResponse.json(cached, {
+      headers: {
+        'X-Cache': 'HIT',
+      },
+    });
+  }
+
   try {
     // Use Geocoding API for city search
     const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
@@ -87,7 +104,7 @@ async function handleCitySearch(query: string) {
     }
 
     // Map geocoding results to city format
-    const cities = data.results.slice(0, 5).map((result) => {
+    const cities: GeocodeResult[] = data.results.slice(0, 5).map((result) => {
       const cityComponent = result.address_components.find(
         (c) => c.types.includes('locality') || c.types.includes('administrative_area_level_2')
       );
@@ -115,7 +132,14 @@ async function handleCitySearch(query: string) {
       };
     });
 
-    return NextResponse.json(cities);
+    // Cache the results
+    setCachedCitySearch(query, cities);
+
+    return NextResponse.json(cities, {
+      headers: {
+        'X-Cache': 'MISS',
+      },
+    });
   } catch (error) {
     console.error('Error searching cities:', error);
     return NextResponse.json({ error: 'Failed to search cities' }, { status: 500 });
@@ -123,6 +147,16 @@ async function handleCitySearch(query: string) {
 }
 
 async function handleReverseGeocode(lat: number, lng: number) {
+  // Check cache first
+  const cached = getCachedReverseGeocode(lat, lng);
+  if (cached) {
+    return NextResponse.json(cached, {
+      headers: {
+        'X-Cache': 'HIT',
+      },
+    });
+  }
+
   try {
     const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
     url.searchParams.set('latlng', `${lat},${lng}`);
@@ -138,13 +172,14 @@ async function handleReverseGeocode(lat: number, lng: number) {
 
     if (data.status !== 'OK' || !data.results || data.results.length === 0) {
       console.error('Reverse geocoding error:', data.status);
-      return NextResponse.json({
+      const fallback: GeocodeResult = {
         name: 'Local desconhecido',
         country: '',
         lat,
         lng,
         fullName: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-      });
+      };
+      return NextResponse.json(fallback);
     }
 
     const result = data.results[0];
@@ -166,21 +201,31 @@ async function handleReverseGeocode(lat: number, lng: number) {
     if (stateName) fullName += `, ${stateName}`;
     if (countryName) fullName += `, ${countryName}`;
 
-    return NextResponse.json({
+    const geocodeResult: GeocodeResult = {
       name: cityName,
       country: countryName,
       lat,
       lng,
       fullName,
+    };
+
+    // Cache the result
+    setCachedReverseGeocode(lat, lng, geocodeResult);
+
+    return NextResponse.json(geocodeResult, {
+      headers: {
+        'X-Cache': 'MISS',
+      },
     });
   } catch (error) {
     console.error('Error reverse geocoding:', error);
-    return NextResponse.json({
+    const fallback: GeocodeResult = {
       name: 'Local desconhecido',
       country: '',
       lat,
       lng,
       fullName: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-    });
+    };
+    return NextResponse.json(fallback);
   }
 }

@@ -21,6 +21,10 @@ export const threeColors = {
   burgundy: 0x8b1538,
   burgundyGlow: 0xcb4767,
   background: 0xffffff,
-  globe: 0x1a1a1a,
-  globeAtmosphere: 0x8b1538,
+  // Bright mint-white globe theme
+  globe: 0xe8f0ed,           // Soft mint-white for main globe
+  globeInner: 0xf5faf8,      // Lighter inner glow
+  globeAtmosphere: 0x8b1538, // Burgundy atmosphere glow
+  globeGrid: 0xd0e0da,       // Subtle mint grid lines
+  globeHighlight: 0xffffff,  // Pure white highlights
 } as const;

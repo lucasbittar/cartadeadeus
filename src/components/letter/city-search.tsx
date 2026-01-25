@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { copy } from '@/constants/copy';
 import type { City } from '@/types';
 
+type LocationState = 'loading' | 'success' | 'editing' | 'fallback';
+
 interface CitySearchProps {
   value: City | null;
   onChange: (city: City | null) => void;
@@ -13,22 +15,28 @@ interface CitySearchProps {
 }
 
 export function CitySearch({ value, onChange, className }: CitySearchProps) {
+  const [state, setState] = useState<LocationState>('loading');
+  const [cityName, setCityName] = useState('');
+  const [gpsCoordinates, setGpsCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fallback search state
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<City[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Sync query with value when value changes externally
+  // Auto-request GPS on mount
   useEffect(() => {
-    if (value?.fullName && query !== value.fullName) {
-      setQuery(value.fullName);
-    }
-  }, [value]);
+    requestGpsLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // Click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
@@ -40,66 +48,56 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Fallback search effect (only in fallback mode)
   useEffect(() => {
-    if (query.length < 2) {
+    if (state !== 'fallback' || query.length < 2) {
       setResults([]);
       setHasSearched(false);
       return;
     }
 
-    // Don't search if query matches current value (user selected from dropdown)
+    // Don't search if query matches current value
     if (value?.fullName === query) {
       setHasSearched(false);
       return;
     }
 
     const searchCities = async () => {
-      setIsLoading(true);
+      setIsSearching(true);
       setHasSearched(false);
-      setError(null);
       try {
         const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`);
         const data = await response.json();
 
-        // Check if it's an array (success) or an error object
         if (Array.isArray(data)) {
           setResults(data);
-          setError(null);
         } else if (data.error) {
-          console.error('City search error:', data.error);
           setResults([]);
-          setError(data.error);
         } else {
-          // Single result object
           setResults([data]);
-          setError(null);
         }
-      } catch (err) {
-        console.error('Failed to search cities:', err);
+      } catch {
         setResults([]);
-        setError('Falha ao buscar cidades');
       } finally {
-        setIsLoading(false);
+        setIsSearching(false);
         setHasSearched(true);
       }
     };
 
     const debounce = setTimeout(searchCities, 300);
     return () => clearTimeout(debounce);
-  }, [query, value?.fullName]);
+  }, [query, value?.fullName, state]);
 
-  const handleSelect = (city: City) => {
-    setQuery(city.fullName);
-    setIsOpen(false);
-    setHasSearched(false);
-    onChange(city);
-  };
+  const requestGpsLocation = async () => {
+    if (!navigator.geolocation) {
+      setError('Geolocalização não suportada pelo navegador');
+      setState('fallback');
+      return;
+    }
 
-  const handleUseLocation = async () => {
-    if (!navigator.geolocation) return;
+    setState('loading');
+    setError(null);
 
-    setIsLoading(true);
-    setIsOpen(false);
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
@@ -110,28 +108,185 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
       });
 
       const { latitude, longitude } = position.coords;
+      setGpsCoordinates({ lat: latitude, lng: longitude });
+
+      // Reverse geocode for display name
       const response = await fetch(`/api/cities?lat=${latitude}&lng=${longitude}`);
       if (response.ok) {
         const city = await response.json();
         if (!city.error) {
-          onChange(city);
-          setQuery(city.fullName);
+          setCityName(city.fullName);
+          onChange({
+            ...city,
+            lat: latitude,
+            lng: longitude,
+          });
+          setState('success');
+          return;
         }
       }
-    } catch (error) {
-      console.error('Failed to get location:', error);
-    } finally {
-      setIsLoading(false);
+
+      // Reverse geocoding failed - use coordinates as fallback display
+      const fallbackName = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+      setCityName(fallbackName);
+      onChange({
+        name: fallbackName,
+        country: '',
+        fullName: fallbackName,
+        lat: latitude,
+        lng: longitude,
+      });
+      setState('success');
+    } catch (err) {
+      const geoError = err as GeolocationPositionError;
+      if (geoError.code === geoError.PERMISSION_DENIED) {
+        setError('Permita o acesso à localização para continuar');
+      } else if (geoError.code === geoError.TIMEOUT) {
+        setError('Tempo esgotado. Tente novamente.');
+      } else {
+        setError('Não foi possível obter sua localização');
+      }
+      setState('fallback');
     }
   };
 
-  const showDropdown = isOpen && query.length >= 2 && (isLoading || hasSearched);
+  const handleEdit = () => {
+    setState('editing');
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
 
+  const handleSave = () => {
+    if (!gpsCoordinates) return;
+
+    onChange({
+      name: cityName,
+      country: '',
+      fullName: cityName,
+      lat: gpsCoordinates.lat,
+      lng: gpsCoordinates.lng,
+    });
+    setState('success');
+  };
+
+  const handleFallbackSelect = (city: City) => {
+    setQuery(city.fullName);
+    setIsOpen(false);
+    setHasSearched(false);
+    onChange(city);
+  };
+
+  const showDropdown = state === 'fallback' && isOpen && query.length >= 2 && (isSearching || hasSearched);
+
+  // Loading state
+  if (state === 'loading') {
+    return (
+      <div className={cn('relative', className)}>
+        <label className="block text-sm font-medium text-foreground/70 mb-2">
+          {copy.form.locationLabel}
+        </label>
+        <div className={cn(
+          'w-full px-4 py-3 rounded-lg border border-foreground/10',
+          'bg-white text-foreground/50',
+          'flex items-center gap-3'
+        )}>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="w-4 h-4 border-2 border-burgundy/30 border-t-burgundy rounded-full"
+          />
+          <span className="text-sm">Obtendo localização...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Success state (read-only)
+  if (state === 'success') {
+    return (
+      <div className={cn('relative', className)}>
+        <label className="block text-sm font-medium text-foreground/70 mb-2">
+          {copy.form.locationLabel}
+        </label>
+        <div className={cn(
+          'w-full px-4 py-3 rounded-lg border border-foreground/10',
+          'bg-white text-foreground',
+          'flex items-center justify-between'
+        )}>
+          <div className="flex items-center gap-2">
+            <span className="text-burgundy">📍</span>
+            <span className="text-sm">{cityName}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleEdit}
+            className="px-3 py-1 text-xs font-medium text-burgundy hover:bg-burgundy/5 rounded-md transition-colors"
+          >
+            Editar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Editing state
+  if (state === 'editing') {
+    return (
+      <div className={cn('relative', className)}>
+        <label className="block text-sm font-medium text-foreground/70 mb-2">
+          {copy.form.locationLabel}
+        </label>
+        <div className="relative">
+          <input
+            ref={inputRef}
+            type="text"
+            value={cityName}
+            onChange={(e) => setCityName(e.target.value)}
+            className={cn(
+              'w-full px-4 py-3 pr-24 rounded-lg border border-foreground/10',
+              'bg-white text-foreground placeholder:text-foreground/40',
+              'focus:outline-none focus:ring-2 focus:ring-burgundy/30 focus:border-burgundy',
+              'transition-all duration-200'
+            )}
+          />
+          <button
+            type="button"
+            onClick={handleSave}
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs font-medium text-burgundy hover:bg-burgundy/5 rounded-md transition-colors"
+          >
+            Salvar
+          </button>
+        </div>
+        <p className="mt-1 text-xs text-foreground/50">
+          A localização no mapa permanece a mesma (sua posição atual).
+        </p>
+      </div>
+    );
+  }
+
+  // Fallback state (manual search)
   return (
     <div ref={wrapperRef} className={cn('relative', className)}>
       <label className="block text-sm font-medium text-foreground/70 mb-2">
         {copy.form.locationLabel}
       </label>
+
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-sm text-foreground/60 mb-2 flex items-center gap-2"
+        >
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={requestGpsLocation}
+            className="text-burgundy hover:underline text-xs"
+          >
+            Tentar novamente
+          </button>
+        </motion.p>
+      )}
+
       <div className="relative">
         <input
           ref={inputRef}
@@ -156,14 +311,10 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
         />
         <button
           type="button"
-          onClick={handleUseLocation}
-          disabled={isLoading}
-          className={cn(
-            "absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs font-medium text-burgundy rounded-md transition-colors",
-            isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-burgundy/5"
-          )}
+          onClick={requestGpsLocation}
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs font-medium text-burgundy hover:bg-burgundy/5 rounded-md transition-colors"
         >
-          {isLoading ? 'Buscando...' : 'Usar GPS'}
+          Usar GPS
         </button>
       </div>
 
@@ -175,22 +326,16 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
             exit={{ opacity: 0, y: -10 }}
             className="absolute z-50 w-full mt-1 bg-white border border-foreground/10 rounded-lg shadow-lg max-h-60 overflow-auto"
           >
-            {isLoading ? (
+            {isSearching ? (
               <li className="px-4 py-3 text-foreground/50 text-sm">
                 Buscando...
-              </li>
-            ) : error ? (
-              <li className="px-4 py-3 text-red-600 text-sm">
-                {error.includes('not enabled') || error.includes('not activated')
-                  ? 'API de busca não configurada. Por favor, habilite a Geocoding API no Google Cloud Console.'
-                  : 'Erro ao buscar cidades. Tente novamente.'}
               </li>
             ) : results.length > 0 ? (
               results.map((city, index) => (
                 <li key={`${city.lat}-${city.lng}-${city.name}-${index}`}>
                   <button
                     type="button"
-                    onClick={() => handleSelect(city)}
+                    onClick={() => handleFallbackSelect(city)}
                     className="w-full px-4 py-3 text-left hover:bg-burgundy/5 transition-colors text-sm"
                   >
                     <span className="font-medium">{city.name}</span>
