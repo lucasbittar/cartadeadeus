@@ -148,7 +148,7 @@ export function MarqueeRow({
     <div
       ref={scrollRef}
       className={`
-        flex gap-6 overflow-x-auto pb-4 select-none
+        flex items-start gap-6 overflow-x-auto pb-4 select-none
         ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
       `}
       style={{

@@ -69,7 +69,7 @@ export function LetterCard({ letter, delay = 0, startTyping = false }: LetterCar
         </span>
 
         {/* Letter content with typewriter effect */}
-        <p className="font-jetbrains text-sm text-foreground/90 leading-relaxed pl-6 pr-2 min-h-[80px]">
+        <p className="font-jetbrains text-sm text-foreground/90 leading-relaxed pl-6 pr-2">
           {isComplete ? letter.content : displayedText}
           {isTyping && (
             <span className="inline-block w-0.5 h-4 bg-burgundy ml-0.5 animate-pulse" />
