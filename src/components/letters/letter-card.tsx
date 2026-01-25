@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { AuthorName } from '@/components/ui/author-name';
 import { copy } from '@/constants/copy';
 import type { Letter } from '@/types';
 
@@ -88,7 +89,7 @@ export function LetterCard({ letter, delay = 0, startTyping = false }: LetterCar
       {/* Author and city */}
       <div className="mt-6 pt-4 border-t border-foreground/10">
         <p className="text-sm">
-          <span className="text-burgundy font-medium">{authorName}</span>
+          <AuthorName name={authorName} className="text-burgundy font-medium" />
           <span className="text-foreground/40 mx-1">&middot;</span>
           <span className="text-foreground/50">{letter.city}</span>
         </p>

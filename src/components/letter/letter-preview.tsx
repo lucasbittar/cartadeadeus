@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Modal } from '@/components/ui/modal';
+import { AuthorName } from '@/components/ui/author-name';
 import { useLetterStore } from '@/store/letter-store';
 import { formatDate } from '@/lib/utils';
 
@@ -45,11 +46,11 @@ export function LetterPreviewModal() {
         </blockquote>
 
         <div className="flex items-center justify-between text-sm text-foreground/50">
-          <span>
-            {selectedLetter.is_anonymous
-              ? 'Anônimo'
-              : selectedLetter.author || 'Anônimo'}
-          </span>
+          {selectedLetter.is_anonymous ? (
+            <span>Anônimo</span>
+          ) : (
+            <AuthorName name={selectedLetter.author || 'Anônimo'} />
+          )}
           <span>{formatDate(selectedLetter.created_at)}</span>
         </div>
       </motion.div>
