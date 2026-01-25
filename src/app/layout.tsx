@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, JetBrains_Mono, Inter } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 import { Providers } from '@/components/providers';
 import { copy } from '@/constants/copy';
 import './globals.css';
@@ -54,6 +55,7 @@ export default function RootLayout({
       <body className="font-inter min-h-screen">
         <Providers>{children}</Providers>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
