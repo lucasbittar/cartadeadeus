@@ -10,18 +10,20 @@ export function HeroBackground() {
 
   // Parallax effect - image moves UP when scrolling down (negative value)
   const y = useTransform(scrollY, [0, 1000], [0, -150]);
-  const opacity = useTransform(scrollY, [0, 700], [1, 0]);
   const scale = useTransform(scrollY, [0, 1000], [1, 1.05]);
+
+  // Image fades out as user scrolls for better text readability
+  const imageOpacity = useTransform(scrollY, [0, 400, 700], [1, 0.6, 0.2]);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
       {/* Base gradient fallback - matching the mint tone */}
       <div className="absolute inset-0 bg-[#f0f5f3]" />
 
-      {/* Main background image with parallax */}
+      {/* Main background image with parallax and fade */}
       <motion.div
         className="absolute inset-0 w-full h-[130vh] -top-[10vh]"
-        style={{ y, scale }}
+        style={{ y, scale, opacity: imageOpacity }}
       >
         <Image
           src="/fresno-bg.jpg"
@@ -40,10 +42,7 @@ export function HeroBackground() {
       </motion.div>
 
       {/* Cinematic overlays for depth and text readability */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{ opacity }}
-      >
+      <div className="absolute inset-0 pointer-events-none">
         {/* Subtle vignette */}
         <div
           className="absolute inset-0"
@@ -51,7 +50,7 @@ export function HeroBackground() {
             background: 'radial-gradient(ellipse at center, transparent 0%, transparent 60%, rgba(0,0,0,0.05) 100%)'
           }}
         />
-      </motion.div>
+      </div>
 
       {/* Bottom fade to mint for seamless content transition */}
       <div
