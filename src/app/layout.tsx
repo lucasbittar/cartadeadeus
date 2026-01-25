@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   keywords: ['Fresno', 'Carta de Adeus', 'álbum', 'música', 'rock brasileiro'],
   authors: [{ name: 'Fresno' }],
   manifest: '/site.webmanifest',
+  metadataBase: new URL('https://cartadeadeus.cc'),
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -48,11 +49,22 @@ export const metadata: Metadata = {
     description: copy.site.description,
     type: 'website',
     locale: 'pt_BR',
+    url: 'https://cartadeadeus.cc',
+    siteName: 'Carta de Adeus - Fresno',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Carta de Adeus - Fresno',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: copy.site.title,
     description: copy.site.description,
+    images: ['/og-image.png'],
   },
 };
 
