@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useRef, useState, useMemo, Suspense } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { OrbitControls, Sphere, Html } from '@react-three/drei';
+import React, { useRef, useState, useMemo, Suspense, useEffect, useCallback } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, Sphere, Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { threeColors } from '@/constants/colors';
 import { latLngToVector3, truncateText } from '@/lib/utils';
@@ -11,8 +11,32 @@ import type { Letter } from '@/types';
 const GLOBE_RADIUS = 2;
 
 // Local Earth texture for reliable loading
-// const EARTH_TEXTURE_URL = '/earth-texture.jpg';
 const EARTH_TEXTURE_URL = '/earth-texture-light.jpg';
+
+// Preload texture
+if (typeof window !== 'undefined') {
+  useTexture.preload(EARTH_TEXTURE_URL);
+}
+
+// Component to detect WebGL context loss
+function WebGLContextHandler({ onContextLost }: { onContextLost: () => void }) {
+  const { gl } = useThree();
+
+  useEffect(() => {
+    const canvas = gl.domElement;
+
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      console.warn('WebGL context lost');
+      onContextLost();
+    };
+
+    canvas.addEventListener('webglcontextlost', handleContextLost);
+    return () => canvas.removeEventListener('webglcontextlost', handleContextLost);
+  }, [gl, onContextLost]);
+
+  return null;
+}
 
 interface LetterPointProps {
   letter: Letter;
@@ -175,8 +199,8 @@ function Globe({ letters, onLetterClick }: GlobeProps) {
   const [hoveredLetter, setHoveredLetter] = useState<Letter | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
-  // Load Earth texture
-  const earthTexture = useLoader(THREE.TextureLoader, EARTH_TEXTURE_URL);
+  // Load Earth texture with useTexture (has better error handling)
+  const earthTexture = useTexture(EARTH_TEXTURE_URL);
 
   const shouldRotate = !isInteracting && !hoveredLetter;
 
@@ -277,15 +301,58 @@ interface GlobeSceneProps {
   onLetterClick: (letter: Letter) => void;
 }
 
+// Error fallback component
+function ErrorFallback({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="w-full h-[500px] md:h-[1000px] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4 text-center px-4">
+        <div className="text-foreground/40 text-sm">
+          Não foi possível carregar o globo.
+        </div>
+        <button
+          onClick={onRetry}
+          className="px-4 py-2 bg-burgundy text-white text-sm rounded-lg hover:bg-burgundy/90 transition-colors"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function GlobeScene({ letters, onLetterClick }: GlobeSceneProps) {
+  const [hasError, setHasError] = useState(false);
+  const [key, setKey] = useState(0);
+
+  const handleRetry = useCallback(() => {
+    setHasError(false);
+    setKey((k) => k + 1); // Force remount of Canvas
+  }, []);
+
+  const handleContextLost = useCallback(() => {
+    setHasError(true);
+  }, []);
+
+  if (hasError) {
+    return <ErrorFallback onRetry={handleRetry} />;
+  }
+
   return (
     <div className="w-full h-[500px] md:h-[1000px]">
       <Canvas
+        key={key}
         camera={{ position: [0, 0, 7], fov: 40 }}
         dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, powerPreference: 'default' }}
         style={{ background: 'transparent' }}
+        onCreated={({ gl }) => {
+          // Verify WebGL is working
+          if (!gl.capabilities.isWebGL2 && !gl.capabilities) {
+            console.warn('WebGL capabilities limited');
+          }
+        }}
       >
+        <WebGLContextHandler onContextLost={handleContextLost} />
         <Suspense fallback={<LoadingState />}>
           <Lights />
           <Globe letters={letters} onLetterClick={onLetterClick} />
