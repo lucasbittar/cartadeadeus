@@ -97,9 +97,9 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Quick Actions */}
-      <div className="mt-8">
-        <h3 className="font-medium text-foreground mb-4">Atalhos</h3>
-        <div className="flex gap-4">
+      <div className="mt-6 md:mt-8">
+        <h3 className="font-medium text-foreground mb-3 md:mb-4">Atalhos</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
           <a
             href="/admin/letters?filter=pending"
             className="bg-background border border-muted-light rounded-lg px-4 py-3 hover:border-foreground transition-colors"

@@ -31,17 +31,17 @@ export default function AdminLayout({
       {/* Admin Header */}
       <header className="bg-background border-b border-muted-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <h1 className="font-playfair text-xl font-semibold text-foreground">
-                {copy.admin.title}
-              </h1>
+          <div className="flex items-center justify-between h-14 md:h-16">
+            <h1 className="font-playfair text-lg md:text-xl font-semibold text-foreground">
+              {copy.admin.title}
+            </h1>
+            <div className="flex items-center gap-2 md:gap-4">
               <nav className="flex gap-1">
                 {navItems.map((item) => (
                   <a
                     key={item.href}
                     href={item.href}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 md:px-3 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
                       pathname === item.href
                         ? 'bg-foreground text-background'
                         : 'text-muted-dark hover:text-foreground hover:bg-cream'
@@ -51,19 +51,20 @@ export default function AdminLayout({
                   </a>
                 ))}
               </nav>
+              <div className="w-px h-6 bg-muted-light hidden md:block" />
+              <button
+                onClick={handleLogout}
+                className="text-xs md:text-sm text-muted-dark hover:text-foreground transition-colors"
+              >
+                {copy.admin.nav.logout}
+              </button>
             </div>
-            <button
-              onClick={handleLogout}
-              className="text-sm text-muted-dark hover:text-foreground transition-colors"
-            >
-              {copy.admin.nav.logout}
-            </button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {children}
       </main>
     </div>

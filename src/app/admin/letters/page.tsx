@@ -162,21 +162,23 @@ export default function AdminLettersPage() {
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="flex gap-1 bg-background border border-muted-light rounded-lg p-1">
-          {filters.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => handleFilterChange(f.key)}
-              className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                filter === f.key
-                  ? 'bg-foreground text-background'
-                  : 'text-muted-dark hover:text-foreground'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+      <div className="flex flex-col gap-3 mb-4 md:mb-6">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="flex gap-1 bg-background border border-muted-light rounded-lg p-1 w-fit">
+            {filters.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => handleFilterChange(f.key)}
+                className={`px-2.5 md:px-3 py-1.5 text-xs md:text-sm rounded-md transition-colors whitespace-nowrap ${
+                  filter === f.key
+                    ? 'bg-foreground text-background'
+                    : 'text-muted-dark hover:text-foreground'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <input
@@ -184,25 +186,25 @@ export default function AdminLettersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por conteudo ou autor..."
-          className="flex-1 max-w-xs px-4 py-2 border border-muted-light rounded-lg focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy transition-colors text-sm"
+          className="w-full md:max-w-xs px-4 py-2 border border-muted-light rounded-lg focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy transition-colors text-sm"
         />
       </div>
 
       {/* Bulk Actions */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-4 mb-4 bg-background border border-muted-light rounded-lg px-4 py-3">
-          <span className="text-sm text-muted-dark">
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 bg-background border border-muted-light rounded-lg px-3 md:px-4 py-2 md:py-3">
+          <span className="text-xs md:text-sm text-muted-dark">
             {selectedIds.size} selecionada{selectedIds.size !== 1 ? 's' : ''}
           </span>
           <button
             onClick={() => handleBulkAction('approved')}
-            className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+            className="text-xs md:text-sm text-emerald-600 hover:text-emerald-700 font-medium"
           >
             {copy.admin.letters.bulkActions.approveSelected}
           </button>
           <button
             onClick={() => handleBulkAction('rejected')}
-            className="text-sm text-burgundy hover:text-burgundy/80 font-medium"
+            className="text-xs md:text-sm text-burgundy hover:text-burgundy/80 font-medium"
           >
             {copy.admin.letters.bulkActions.rejectSelected}
           </button>

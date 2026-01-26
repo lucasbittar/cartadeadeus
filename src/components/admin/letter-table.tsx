@@ -82,8 +82,101 @@ export function LetterTable({
     );
   }
 
-  return (
-    <div className="bg-background border border-muted-light rounded-lg overflow-hidden">
+  // Mobile card view
+  const MobileCardView = () => (
+    <div className="space-y-3 md:hidden">
+      {/* Select all on mobile */}
+      <div className="flex items-center gap-2 px-1">
+        <input
+          type="checkbox"
+          checked={allSelected}
+          ref={(el) => {
+            if (el) el.indeterminate = someSelected;
+          }}
+          onChange={(e) => onSelectAll(e.target.checked)}
+          className="rounded border-muted-light"
+        />
+        <span className="text-xs text-muted-dark">Selecionar todas</span>
+      </div>
+
+      {letters.map((letter) => (
+        <div
+          key={letter.id}
+          className={`bg-background border border-muted-light rounded-lg p-4 ${
+            letter.flagged ? 'border-orange-300 bg-orange-50' : ''
+          }`}
+        >
+          {/* Header: checkbox + status + date */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={selectedIds.has(letter.id)}
+                onChange={(e) => onSelect(letter.id, e.target.checked)}
+                className="rounded border-muted-light"
+              />
+              {getStatusBadge(letter.status)}
+            </div>
+            <p className="text-xs text-muted-dark">
+              {formatDate(letter.created_at)}
+            </p>
+          </div>
+
+          {/* Content */}
+          <p className="text-sm text-foreground mb-2">
+            {letter.content}
+          </p>
+
+          {/* Flag reason */}
+          {letter.flagged && letter.flag_reason && (
+            <p className="text-xs text-orange-600 mb-2">
+              <span className="font-medium">{copy.admin.letters.flagReason}:</span>{' '}
+              {letter.flag_reason}
+            </p>
+          )}
+
+          {/* Author & City */}
+          <div className="flex items-center gap-2 text-xs text-muted-dark mb-3">
+            <span>
+              {letter.is_anonymous ? copy.marquee.anonymous : letter.author || '-'}
+            </span>
+            <span>&middot;</span>
+            <span>{letter.city}</span>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3 pt-3 border-t border-muted-light">
+            {letter.status !== 'approved' && (
+              <button
+                onClick={() => onStatusChange(letter.id, 'approved')}
+                className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+              >
+                {copy.admin.letters.actions.approve}
+              </button>
+            )}
+            {letter.status !== 'rejected' && (
+              <button
+                onClick={() => onStatusChange(letter.id, 'rejected')}
+                className="text-sm text-burgundy hover:text-burgundy/80 font-medium"
+              >
+                {copy.admin.letters.actions.reject}
+              </button>
+            )}
+            <button
+              onClick={() => onShare(letter)}
+              className="text-sm text-muted-dark hover:text-foreground font-medium ml-auto"
+            >
+              {copy.admin.letters.actions.share}
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Desktop table view
+  const DesktopTableView = () => (
+    <div className="hidden md:block bg-background border border-muted-light rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-cream border-b border-muted-light">
@@ -198,5 +291,12 @@ export function LetterTable({
         </table>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      <MobileCardView />
+      <DesktopTableView />
+    </>
   );
 }
