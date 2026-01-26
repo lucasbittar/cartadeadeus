@@ -25,12 +25,19 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
+// Number of letters to display in the marquee
+const MARQUEE_LETTER_COUNT = 25;
+// Refresh interval in milliseconds (5 minutes)
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
 export function LettersMarquee() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  // Key to trigger re-shuffle of letters
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const { data: letters = [] } = useQuery({
+  const { data: letters = [], isLoading } = useQuery({
     queryKey: ['letters'],
     queryFn: fetchLetters,
     refetchInterval: 30000,
@@ -49,6 +56,15 @@ export function LettersMarquee() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  // Periodic refresh to reshuffle displayed letters every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshKey((prev) => prev + 1);
+    }, REFRESH_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Randomly select and split letters for two rows
   const { topRow, bottomRow } = useMemo(() => {
     if (letters.length === 0) {
@@ -56,14 +72,52 @@ export function LettersMarquee() {
     }
 
     const shuffled = shuffleArray(letters);
-    const selectedLetters = shuffled.slice(0, Math.min(16, shuffled.length));
+    const selectedLetters = shuffled.slice(0, Math.min(MARQUEE_LETTER_COUNT, shuffled.length));
     const midpoint = Math.ceil(selectedLetters.length / 2);
 
     return {
       topRow: selectedLetters.slice(0, midpoint),
       bottomRow: selectedLetters.slice(midpoint),
     };
-  }, [letters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [letters, refreshKey]);
+
+  // Skeleton loading state during initial fetch
+  if (isLoading) {
+    return (
+      <section ref={sectionRef} className="pb-12 md:py-12 overflow-hidden">
+        {/* Header */}
+        <div className="max-w-4xl mx-auto text-center mb-12 px-4">
+          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-2">
+            {copy.marquee.title}
+          </h2>
+          <p className="text-foreground/60">{copy.marquee.subtitle}</p>
+        </div>
+
+        {/* Skeleton cards */}
+        <div className="flex gap-6 px-4 overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-[280px] md:w-[320px] bg-background rounded-2xl p-6 animate-pulse"
+              style={{
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              }}
+            >
+              <div className="space-y-3">
+                <div className="h-4 bg-muted-light/50 rounded w-full" />
+                <div className="h-4 bg-muted-light/50 rounded w-3/4" />
+                <div className="h-4 bg-muted-light/50 rounded w-1/2" />
+              </div>
+              <div className="mt-6 pt-4 border-t border-muted-light/30">
+                <div className="h-3 bg-muted-light/50 rounded w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   if (letters.length === 0) {
     return (

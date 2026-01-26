@@ -55,9 +55,16 @@ export function GlobeSection() {
           {copy.globe.title}
         </h2>
         <p className="text-foreground/60">
-          {letters.length > 0
-            ? `${letters.length} carta${letters.length !== 1 ? 's' : ''} enviada${letters.length !== 1 ? 's' : ''}`
-            : copy.globe.emptyState}
+          {isLoading ? (
+            <span className="inline-flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full border border-foreground/20 border-t-foreground/60 animate-spin" />
+              {copy.globe.loading}
+            </span>
+          ) : letters.length > 0 ? (
+            `${letters.length} carta${letters.length !== 1 ? 's' : ''} enviada${letters.length !== 1 ? 's' : ''}`
+          ) : (
+            copy.globe.emptyState
+          )}
         </p>
       </motion.div>
 

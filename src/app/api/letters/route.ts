@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { checkRateLimit, isRateLimitEnabled } from '@/lib/rate-limit';
 import { letterInputSchema, formatZodError } from '@/lib/validation';
-import { moderateContent } from '@/lib/moderation';
+import { moderateContent, checkForFlagging } from '@/lib/moderation';
 
 // Body size limit enforced via Zod validation (content max 280 chars, city max 255)
 // For platform-level limits, configure in vercel.json or next.config.js
@@ -11,9 +11,11 @@ export async function GET() {
   try {
     const supabase = await createServerSupabaseClient();
 
+    // Only return approved letters to the public
     const { data, error } = await supabase
       .from('letters')
       .select('*')
+      .eq('status', 'approved')
       .order('created_at', { ascending: false })
       .limit(500);
 
@@ -87,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     const validatedData = validation.data;
 
-    // Content moderation
+    // Content moderation - hard block for obvious violations
     const moderation = moderateContent(validatedData.content);
 
     if (moderation.isBlocked) {
@@ -96,6 +98,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Check for suspicious content that should be flagged for review
+    const flagging = checkForFlagging(validatedData.content);
+
+    // Determine status: flagged content goes to pending, clean content is auto-approved
+    const status = flagging.shouldFlag ? 'pending' : 'approved';
 
     const supabase = await createServerSupabaseClient();
 
@@ -108,6 +116,9 @@ export async function POST(request: NextRequest) {
         lat: validatedData.lat,
         lng: validatedData.lng,
         city: validatedData.city,
+        status,
+        flagged: flagging.shouldFlag,
+        flag_reason: flagging.flagReason,
       })
       .select()
       .single();

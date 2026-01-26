@@ -1,3 +1,5 @@
+export type LetterStatus = 'pending' | 'approved' | 'rejected';
+
 export interface Letter {
   id: string;
   content: string;
@@ -7,6 +9,12 @@ export interface Letter {
   lng: number;
   city: string;
   created_at: string;
+  // Moderation fields
+  status: LetterStatus;
+  flagged: boolean;
+  flag_reason: string | null;
+  moderated_at: string | null;
+  moderated_by: string | null;
 }
 
 export interface LetterInput {

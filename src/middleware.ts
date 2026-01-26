@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createMiddlewareSupabaseClient } from '@/lib/supabase/middleware';
+
+// Allowed admin emails (comma-separated in env var)
+function getAdminEmails(): string[] {
+  const emails = process.env.ADMIN_EMAILS || '';
+  return emails.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+}
 
 // Security headers to add to all responses
 const securityHeaders = {
@@ -39,8 +46,48 @@ const cspDirectives = [
   "worker-src 'self' blob:",
 ];
 
-export function middleware(_request: NextRequest) {
-  // Get the response
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Check if this is an admin route (except login and auth callback)
+  const isAdminRoute = pathname.startsWith('/admin');
+  const isAdminLoginRoute = pathname === '/admin/login';
+  const isAuthCallback = pathname === '/admin/auth/callback';
+
+  if (isAdminRoute && !isAdminLoginRoute && !isAuthCallback) {
+    // Verify admin session
+    const { supabase, response: supabaseResponse } =
+      await createMiddlewareSupabaseClient(request);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // Check if user is authenticated and is an admin
+    const adminEmails = getAdminEmails();
+    const isAdmin =
+      user?.email && adminEmails.includes(user.email.toLowerCase());
+
+    if (!user || !isAdmin) {
+      // Redirect to login
+      const loginUrl = new URL('/admin/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // User is authenticated admin - add security headers to response
+    for (const [key, value] of Object.entries(securityHeaders)) {
+      supabaseResponse.headers.set(key, value);
+    }
+    supabaseResponse.headers.set(
+      'Content-Security-Policy',
+      cspDirectives.join('; ')
+    );
+
+    return supabaseResponse;
+  }
+
+  // Get the response for non-admin routes
   const response = NextResponse.next();
 
   // Add security headers to all responses

@@ -62,4 +62,67 @@ export const copy = {
     },
     expired: 'O momento chegou.',
   },
+  admin: {
+    title: 'Painel Admin',
+    login: {
+      title: 'Acesso Admin',
+      subtitle: 'Entre com seu email autorizado',
+      emailPlaceholder: 'seu@email.com',
+      submitButton: 'Enviar link de acesso',
+      sending: 'Enviando...',
+      success: 'Link enviado! Verifique seu email.',
+      error: 'Email não autorizado',
+      invalidEmail: 'Email inválido',
+    },
+    nav: {
+      dashboard: 'Dashboard',
+      letters: 'Cartas',
+      logout: 'Sair',
+    },
+    dashboard: {
+      title: 'Visão Geral',
+      stats: {
+        total: 'Total de cartas',
+        pending: 'Aguardando revisão',
+        flagged: 'Sinalizadas',
+        approved: 'Aprovadas',
+        rejected: 'Rejeitadas',
+      },
+    },
+    letters: {
+      title: 'Gerenciar Cartas',
+      filters: {
+        all: 'Todas',
+        pending: 'Pendentes',
+        flagged: 'Sinalizadas',
+        approved: 'Aprovadas',
+        rejected: 'Rejeitadas',
+      },
+      table: {
+        content: 'Conteúdo',
+        author: 'Autor',
+        city: 'Cidade',
+        status: 'Status',
+        date: 'Data',
+        actions: 'Ações',
+      },
+      actions: {
+        approve: 'Aprovar',
+        reject: 'Rejeitar',
+        share: 'Compartilhar',
+      },
+      bulkActions: {
+        approveSelected: 'Aprovar selecionadas',
+        rejectSelected: 'Rejeitar selecionadas',
+      },
+      emptyState: 'Nenhuma carta encontrada',
+      flagReason: 'Motivo da sinalização',
+    },
+    share: {
+      title: 'Compartilhar Carta',
+      downloadStory: 'Download Story (1080x1920)',
+      downloadOG: 'Download OG (1200x630)',
+      downloading: 'Gerando imagem...',
+    },
+  },
 } as const;
