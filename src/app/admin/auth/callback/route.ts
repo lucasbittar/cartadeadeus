@@ -5,7 +5,11 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const redirect = searchParams.get('redirect') || '/admin';
-  const origin = request.headers.get('origin') || new URL(request.url).origin;
+  // Use env var, request URL origin, or production URL as fallback
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    request.nextUrl.origin ||
+    'https://www.cartadeadeus.cc';
 
   if (code) {
     const supabase = await createServerSupabaseClient();
