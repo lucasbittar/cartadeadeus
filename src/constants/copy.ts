@@ -62,6 +62,10 @@ export const copy = {
     },
     expired: 'O momento chegou.',
   },
+  mural: {
+    emptyState: 'As primeiras cartas estão a caminho...',
+    emptySubtext: 'As cartas aparecerão aqui em breve.',
+  },
   admin: {
     title: 'Painel Admin',
     login: {
