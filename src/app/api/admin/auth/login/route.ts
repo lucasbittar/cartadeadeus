@@ -32,13 +32,8 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createServerSupabaseClient();
 
-    // Get the base URL for the redirect
-    // Use NEXT_PUBLIC_SITE_URL env var, or fall back to request URL origin, or production URL
-    const origin =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      request.nextUrl.origin ||
-      'https://www.cartadeadeus.cc';
-    const redirectTo = `${origin}/admin/auth/callback?redirect=${encodeURIComponent(redirect)}`;
+    // Hard-coded production URL for magic link redirect
+    const redirectTo = `https://www.cartadeadeus.cc/admin/auth/callback?redirect=${encodeURIComponent(redirect)}`;
 
     // Send magic link
     const { error } = await supabase.auth.signInWithOtp({
