@@ -107,7 +107,7 @@ export default function HomePage() {
                 >
                   Lucas Bittar
                 </a>{' '}
-                para a melhor banda do Brasil e seus fãs.
+                para a maior banda do Brasil e seus fãs.
               </p>
 
               {/* Social handles */}
