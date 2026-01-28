@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient, createAdminSupabaseClient } from '@/lib/supabase/server';
 
 // Verify admin session helper
 async function verifyAdmin(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>) {
@@ -54,7 +54,10 @@ export async function POST(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
+    // Use admin client to bypass RLS for the update
+    const adminSupabase = createAdminSupabaseClient();
+
+    const { data, error } = await adminSupabase
       .from('letters')
       .update({
         status,

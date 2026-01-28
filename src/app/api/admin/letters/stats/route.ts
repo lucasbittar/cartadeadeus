@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient, createAdminSupabaseClient } from '@/lib/supabase/server';
 
 // Verify admin session helper
 async function verifyAdmin(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>) {
@@ -26,24 +26,27 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Use admin client to bypass RLS and get accurate counts
+    const adminSupabase = createAdminSupabaseClient();
+
     // Get counts by status
     const [totalResult, pendingResult, flaggedResult, approvedResult, rejectedResult] =
       await Promise.all([
-        supabase.from('letters').select('*', { count: 'exact', head: true }),
-        supabase
+        adminSupabase.from('letters').select('*', { count: 'exact', head: true }),
+        adminSupabase
           .from('letters')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'pending'),
-        supabase
+        adminSupabase
           .from('letters')
           .select('*', { count: 'exact', head: true })
           .eq('flagged', true)
           .eq('status', 'pending'),
-        supabase
+        adminSupabase
           .from('letters')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'approved'),
-        supabase
+        adminSupabase
           .from('letters')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'rejected'),

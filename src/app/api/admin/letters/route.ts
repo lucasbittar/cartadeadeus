@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient, createAdminSupabaseClient } from '@/lib/supabase/server';
 
 // Verify admin session helper
 async function verifyAdmin(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>) {
@@ -35,8 +35,11 @@ export async function GET(request: NextRequest) {
 
     const offset = (page - 1) * limit;
 
+    // Use admin client to bypass RLS and see all letters
+    const adminSupabase = createAdminSupabaseClient();
+
     // Build query
-    let query = supabase
+    let query = adminSupabase
       .from('letters')
       .select('*', { count: 'exact' });
 

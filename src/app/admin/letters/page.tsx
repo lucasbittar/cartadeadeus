@@ -9,11 +9,58 @@ import { AdminShareModal } from '@/components/admin/admin-share-modal';
 
 type FilterType = 'all' | 'pending' | 'flagged' | 'approved' | 'rejected';
 
+// Bulk rejection confirmation modal
+function BulkRejectConfirmModal({
+  count,
+  onConfirm,
+  onCancel,
+}: {
+  count: number;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
+      <div className="bg-background rounded-lg max-w-md w-full p-6">
+        <h3 className="font-playfair text-lg font-semibold text-foreground mb-4">
+          Confirmar rejeição em massa
+        </h3>
+
+        <p className="text-sm text-muted-dark mb-6">
+          Tem certeza que deseja rejeitar <strong>{count}</strong> carta{count !== 1 ? 's' : ''}?
+          Esta ação pode ser desfeita depois.
+        </p>
+
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-sm text-muted-dark hover:text-foreground transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 text-sm bg-burgundy text-white rounded-lg hover:bg-burgundy/90 transition-colors"
+          >
+            Rejeitar {count} carta{count !== 1 ? 's' : ''}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLettersPage() {
   const [letters, setLetters] = useState<Letter[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [shareModalLetter, setShareModalLetter] = useState<Letter | null>(null);
+  const [showBulkRejectConfirm, setShowBulkRejectConfirm] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [search, setSearch] = useState('');
@@ -203,7 +250,7 @@ export default function AdminLettersPage() {
             {copy.admin.letters.bulkActions.approveSelected}
           </button>
           <button
-            onClick={() => handleBulkAction('rejected')}
+            onClick={() => setShowBulkRejectConfirm(true)}
             className="text-xs md:text-sm text-burgundy hover:text-burgundy/80 font-medium"
           >
             {copy.admin.letters.bulkActions.rejectSelected}
@@ -239,6 +286,18 @@ export default function AdminLettersPage() {
         <AdminShareModal
           letter={shareModalLetter}
           onClose={() => setShareModalLetter(null)}
+        />
+      )}
+
+      {/* Bulk Reject Confirmation Modal */}
+      {showBulkRejectConfirm && (
+        <BulkRejectConfirmModal
+          count={selectedIds.size}
+          onConfirm={() => {
+            handleBulkAction('rejected');
+            setShowBulkRejectConfirm(false);
+          }}
+          onCancel={() => setShowBulkRejectConfirm(false)}
         />
       )}
     </div>

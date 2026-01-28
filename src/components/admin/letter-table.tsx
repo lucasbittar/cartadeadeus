@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Letter, LetterStatus } from '@/types';
 import { copy } from '@/constants/copy';
 
@@ -13,6 +14,58 @@ interface LetterTableProps {
   onShare: (letter: Letter) => void;
 }
 
+// Confirmation modal for rejecting letters
+function RejectConfirmModal({
+  letter,
+  onConfirm,
+  onCancel,
+}: {
+  letter: Letter;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
+      <div className="bg-background rounded-lg max-w-md w-full p-6">
+        <h3 className="font-playfair text-lg font-semibold text-foreground mb-4">
+          Confirmar rejeição
+        </h3>
+
+        <div className="bg-cream rounded-lg p-4 mb-4">
+          <p className="text-sm text-foreground line-clamp-3">{letter.content}</p>
+          <p className="mt-2 text-xs text-muted-dark">
+            {letter.is_anonymous ? copy.marquee.anonymous : letter.author || '-'} · {letter.city}
+          </p>
+        </div>
+
+        <p className="text-sm text-muted-dark mb-6">
+          Tem certeza que deseja rejeitar esta carta? Esta ação pode ser desfeita depois.
+        </p>
+
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-sm text-muted-dark hover:text-foreground transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 text-sm bg-burgundy text-white rounded-lg hover:bg-burgundy/90 transition-colors"
+          >
+            Rejeitar carta
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LetterTable({
   letters,
   loading,
@@ -22,9 +75,22 @@ export function LetterTable({
   onStatusChange,
   onShare,
 }: LetterTableProps) {
+  const [letterToReject, setLetterToReject] = useState<Letter | null>(null);
+
   const allSelected =
     letters.length > 0 && letters.every((l) => selectedIds.has(l.id));
   const someSelected = selectedIds.size > 0 && !allSelected;
+
+  const handleRejectClick = (letter: Letter) => {
+    setLetterToReject(letter);
+  };
+
+  const handleConfirmReject = () => {
+    if (letterToReject) {
+      onStatusChange(letterToReject.id, 'rejected');
+      setLetterToReject(null);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -156,7 +222,7 @@ export function LetterTable({
             )}
             {letter.status !== 'rejected' && (
               <button
-                onClick={() => onStatusChange(letter.id, 'rejected')}
+                onClick={() => handleRejectClick(letter)}
                 className="text-sm text-burgundy hover:text-burgundy/80 font-medium"
               >
                 {copy.admin.letters.actions.reject}
@@ -271,7 +337,7 @@ export function LetterTable({
                     )}
                     {letter.status !== 'rejected' && (
                       <button
-                        onClick={() => onStatusChange(letter.id, 'rejected')}
+                        onClick={() => handleRejectClick(letter)}
                         className="text-xs text-burgundy hover:text-burgundy/80 font-medium"
                       >
                         {copy.admin.letters.actions.reject}
@@ -297,6 +363,15 @@ export function LetterTable({
     <>
       <MobileCardView />
       <DesktopTableView />
+
+      {/* Rejection confirmation modal */}
+      {letterToReject && (
+        <RejectConfirmModal
+          letter={letterToReject}
+          onConfirm={handleConfirmReject}
+          onCancel={() => setLetterToReject(null)}
+        />
+      )}
     </>
   );
 }
