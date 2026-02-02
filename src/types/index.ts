@@ -35,8 +35,8 @@ export interface City {
   placeId?: string;
 }
 
-export interface GlobePoint {
+export interface LetterMarker {
+  id: string;
   lat: number;
   lng: number;
-  letter: Letter;
 }

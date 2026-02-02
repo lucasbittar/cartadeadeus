@@ -47,7 +47,8 @@ export function LetterForm() {
   const mutation = useMutation({
     mutationFn: submitLetter,
     onSuccess: (letter) => {
-      queryClient.invalidateQueries({ queryKey: ['letters'] });
+      queryClient.invalidateQueries({ queryKey: ['letters-markers'] });
+      queryClient.invalidateQueries({ queryKey: ['letters-feed'] });
       setSubmittedLetter(letter);
       resetForm();
       setFormModalOpen(false);

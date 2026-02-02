@@ -28,8 +28,8 @@ interface LetterStore {
   setFormModalOpen: (open: boolean) => void;
 
   // Selected letter for viewing
-  selectedLetter: Letter | null;
-  setSelectedLetter: (letter: Letter | null) => void;
+  selectedLetterId: string | null;
+  setSelectedLetterId: (id: string | null) => void;
 }
 
 const initialFormState: LetterFormState = {
@@ -59,6 +59,6 @@ export const useLetterStore = create<LetterStore>((set) => ({
   isFormModalOpen: false,
   setFormModalOpen: (isFormModalOpen) => set({ isFormModalOpen }),
 
-  selectedLetter: null,
-  setSelectedLetter: (selectedLetter) => set({ selectedLetter }),
+  selectedLetterId: null,
+  setSelectedLetterId: (selectedLetterId) => set({ selectedLetterId }),
 }));

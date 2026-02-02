@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { useLetterStore } from '@/store/letter-store';
 import { copy } from '@/constants/copy';
-import type { Letter } from '@/types';
+import type { LetterMarker } from '@/types';
 
 const GlobeScene = dynamic(
   () => import('./globe-scene').then((mod) => mod.GlobeScene),
@@ -25,21 +25,21 @@ const GlobeScene = dynamic(
   }
 );
 
-async function fetchLetters(): Promise<Letter[]> {
-  const response = await fetch('/api/letters');
+async function fetchMarkers(): Promise<LetterMarker[]> {
+  const response = await fetch('/api/letters/markers');
   if (!response.ok) {
-    throw new Error('Failed to fetch letters');
+    throw new Error('Failed to fetch letter markers');
   }
   return response.json();
 }
 
 export function GlobeSection() {
-  const setSelectedLetter = useLetterStore((state) => state.setSelectedLetter);
+  const setSelectedLetterId = useLetterStore((state) => state.setSelectedLetterId);
 
-  const { data: letters = [], isLoading } = useQuery({
-    queryKey: ['letters'],
-    queryFn: fetchLetters,
-    refetchInterval: 30000,
+  const { data: markers = [], isLoading } = useQuery({
+    queryKey: ['letters-markers'],
+    queryFn: fetchMarkers,
+    refetchInterval: 60000,
   });
 
   return (
@@ -60,8 +60,8 @@ export function GlobeSection() {
               <span className="w-3 h-3 rounded-full border border-foreground/20 border-t-foreground/60 animate-spin" />
               {copy.globe.loading}
             </span>
-          ) : letters.length > 0 ? (
-            `${letters.length} carta${letters.length !== 1 ? 's' : ''} enviada${letters.length !== 1 ? 's' : ''}`
+          ) : markers.length > 0 ? (
+            `${markers.length} carta${markers.length !== 1 ? 's' : ''} enviada${markers.length !== 1 ? 's' : ''}`
           ) : (
             copy.globe.emptyState
           )}
@@ -75,8 +75,8 @@ export function GlobeSection() {
         transition={{ duration: 0.8, delay: 0.2 }}
       >
         <GlobeScene
-          letters={letters}
-          onLetterClick={setSelectedLetter}
+          markers={markers}
+          onMarkerClick={setSelectedLetterId}
         />
       </motion.div>
     </section>

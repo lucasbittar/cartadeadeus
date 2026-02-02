@@ -9,7 +9,7 @@ import { copy } from '@/constants/copy';
 import type { Letter } from '@/types';
 
 async function fetchLetters(): Promise<Letter[]> {
-  const response = await fetch('/api/letters');
+  const response = await fetch('/api/letters?limit=100');
   if (!response.ok) {
     throw new Error('Failed to fetch letters');
   }
@@ -38,7 +38,7 @@ export function LettersMarquee() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { data: letters = [], isLoading } = useQuery({
-    queryKey: ['letters'],
+    queryKey: ['letters-feed'],
     queryFn: fetchLetters,
     refetchInterval: 30000,
   });
