@@ -5,8 +5,8 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Sphere, Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { threeColors } from '@/constants/colors';
-import { latLngToVector3, truncateText } from '@/lib/utils';
-import type { Letter } from '@/types';
+import { latLngToVector3 } from '@/lib/utils';
+import type { LetterMarker } from '@/types';
 
 const GLOBE_RADIUS = 2;
 
@@ -39,18 +39,16 @@ function WebGLContextHandler({ onContextLost }: { onContextLost: () => void }) {
 }
 
 interface LetterPointProps {
-  letter: Letter;
-  onClick: (letter: Letter) => void;
-  onHover: (letter: Letter | null) => void;
-  isHovered: boolean;
+  marker: LetterMarker;
+  onClick: (id: string) => void;
 }
 
-function LetterPoint({ letter, onClick, onHover, isHovered }: LetterPointProps) {
+function LetterPoint({ marker, onClick }: LetterPointProps) {
   const groupRef = useRef<THREE.Group>(null);
   const position = useMemo(() => {
-    const pos = latLngToVector3(letter.lat, letter.lng, GLOBE_RADIUS + 0.02);
+    const pos = latLngToVector3(marker.lat, marker.lng, GLOBE_RADIUS + 0.02);
     return new THREE.Vector3(pos.x, pos.y, pos.z);
-  }, [letter.lat, letter.lng]);
+  }, [marker.lat, marker.lng]);
 
   // Calculate normal vector pointing outward from globe center
   const normal = useMemo(() => position.clone().normalize(), [position]);
@@ -58,7 +56,7 @@ function LetterPoint({ letter, onClick, onHover, isHovered }: LetterPointProps) 
   useFrame((state) => {
     if (groupRef.current) {
       // Gentle floating animation
-      const float = Math.sin(state.clock.elapsedTime * 1.5 + letter.lat * 0.05) * 0.003;
+      const float = Math.sin(state.clock.elapsedTime * 1.5 + marker.lat * 0.05) * 0.003;
       groupRef.current.position.copy(
         position.clone().add(normal.clone().multiplyScalar(float))
       );
@@ -67,19 +65,17 @@ function LetterPoint({ letter, onClick, onHover, isHovered }: LetterPointProps) 
 
   return (
     <group ref={groupRef} position={position}>
-      {/* Large invisible hit area for easy hovering */}
+      {/* Large invisible hit area for easy clicking */}
       <mesh
         onClick={(e) => {
           e.stopPropagation();
-          onClick(letter);
+          onClick(marker.id);
         }}
         onPointerOver={(e) => {
           e.stopPropagation();
-          onHover(letter);
           document.body.style.cursor = 'pointer';
         }}
         onPointerOut={() => {
-          onHover(null);
           document.body.style.cursor = 'default';
         }}
       >
@@ -87,125 +83,49 @@ function LetterPoint({ letter, onClick, onHover, isHovered }: LetterPointProps) 
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
 
-      {/* Outer glow - always visible, stronger on hover */}
-      <mesh scale={isHovered ? 1.8 : 1}>
+      {/* Outer glow */}
+      <mesh>
         <sphereGeometry args={[0.025, 16, 16]} />
         <meshBasicMaterial
           color={threeColors.burgundyGlow}
           transparent
-          opacity={isHovered ? 0.35 : 0.15}
+          opacity={0.15}
         />
       </mesh>
 
       {/* Main point - small 3D burgundy sphere */}
-      <mesh scale={isHovered ? 1.3 : 1}>
+      <mesh>
         <sphereGeometry args={[0.012, 16, 16]} />
-        <meshBasicMaterial
-          color={isHovered ? threeColors.burgundyGlow : threeColors.burgundy}
-        />
+        <meshBasicMaterial color={threeColors.burgundy} />
       </mesh>
 
       {/* Inner highlight - creates depth */}
-      <mesh position={[0.002, 0.002, 0.004]} scale={isHovered ? 1.3 : 1}>
+      <mesh position={[0.002, 0.002, 0.004]}>
         <sphereGeometry args={[0.004, 8, 8]} />
         <meshBasicMaterial
           color={0xffffff}
           transparent
-          opacity={isHovered ? 0.9 : 0.6}
+          opacity={0.6}
         />
       </mesh>
     </group>
   );
 }
 
-interface TooltipProps {
-  letter: Letter;
-}
-
-function Tooltip({ letter }: TooltipProps) {
-  const position = useMemo(() => {
-    const pos = latLngToVector3(letter.lat, letter.lng, GLOBE_RADIUS + 0.12);
-    return new THREE.Vector3(pos.x, pos.y, pos.z);
-  }, [letter.lat, letter.lng]);
-
-  return (
-    <Html position={position} center distanceFactor={8}>
-      <div
-        className="pointer-events-none select-none"
-        style={{
-          animation: 'tooltipFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-        }}
-      >
-        <div
-          className="relative"
-          style={{
-            background: 'rgba(255, 255, 255, 0.97)',
-            backdropFilter: 'blur(8px)',
-            borderRadius: '2px',
-            padding: '4px 6px',
-            maxWidth: '110px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-            borderTop: '1.5px solid rgba(139, 21, 56, 0.6)',
-          }}
-        >
-          <p
-            className="font-jetbrains text-foreground/75 leading-snug"
-            style={{
-              fontSize: '5.4px',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            &ldquo;{truncateText(letter.content, 50)}&rdquo;
-          </p>
-          <div
-            className="flex items-center gap-0.5 mt-0.5 pt-0.5"
-            style={{ borderTop: '1px solid rgba(0,0,0,0.04)' }}
-          >
-            <svg
-              width="5"
-              height="5"
-              viewBox="0 0 24 24"
-              fill="#8B1538"
-              style={{ opacity: 0.5, flexShrink: 0 }}
-            >
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
-            <span
-              className="text-foreground/50 truncate"
-              style={{ fontSize: '4.8px', letterSpacing: '0.01em' }}
-            >
-              {letter.city}
-            </span>
-          </div>
-        </div>
-      </div>
-      <style>{`
-        @keyframes tooltipFadeIn {
-          from { opacity: 0; transform: translateY(2px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </Html>
-  );
-}
-
 interface GlobeProps {
-  letters: Letter[];
-  onLetterClick: (letter: Letter) => void;
+  markers: LetterMarker[];
+  onMarkerClick: (id: string) => void;
 }
 
-function Globe({ letters, onLetterClick }: GlobeProps) {
+function Globe({ markers, onMarkerClick }: GlobeProps) {
   const globeRef = useRef<THREE.Group>(null);
-  const [hoveredLetter, setHoveredLetter] = useState<Letter | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
   // Load Earth texture with useTexture (has better error handling)
   const earthTexture = useTexture(EARTH_TEXTURE_URL);
 
-  const shouldRotate = !isInteracting && !hoveredLetter;
-
   useFrame((_, delta) => {
-    if (globeRef.current && shouldRotate) {
+    if (globeRef.current && !isInteracting) {
       globeRef.current.rotation.y += delta * 0.025;
     }
   });
@@ -251,17 +171,13 @@ function Globe({ letters, onLetterClick }: GlobeProps) {
         />
       </Sphere>
 
-      {letters.map((letter) => (
+      {markers.map((marker) => (
         <LetterPoint
-          key={letter.id}
-          letter={letter}
-          onClick={onLetterClick}
-          onHover={setHoveredLetter}
-          isHovered={hoveredLetter?.id === letter.id}
+          key={marker.id}
+          marker={marker}
+          onClick={onMarkerClick}
         />
       ))}
-
-      {hoveredLetter && <Tooltip letter={hoveredLetter} />}
 
       <OrbitControls
         enablePan={false}
@@ -297,8 +213,8 @@ function LoadingState() {
 }
 
 interface GlobeSceneProps {
-  letters: Letter[];
-  onLetterClick: (letter: Letter) => void;
+  markers: LetterMarker[];
+  onMarkerClick: (id: string) => void;
 }
 
 // Error fallback component
@@ -320,7 +236,7 @@ function ErrorFallback({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-export function GlobeScene({ letters, onLetterClick }: GlobeSceneProps) {
+export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
   const [hasError, setHasError] = useState(false);
   const [key, setKey] = useState(0);
 
@@ -355,7 +271,7 @@ export function GlobeScene({ letters, onLetterClick }: GlobeSceneProps) {
         <WebGLContextHandler onContextLost={handleContextLost} />
         <Suspense fallback={<LoadingState />}>
           <Lights />
-          <Globe letters={letters} onLetterClick={onLetterClick} />
+          <Globe markers={markers} onMarkerClick={onMarkerClick} />
         </Suspense>
       </Canvas>
     </div>

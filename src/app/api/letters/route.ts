@@ -7,17 +7,22 @@ import { moderateContent, checkForFlagging } from '@/lib/moderation';
 // Body size limit enforced via Zod validation (content max 280 chars, city max 255)
 // For platform-level limits, configure in vercel.json or next.config.js
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10) || 20));
+    const offset = (page - 1) * limit;
+
     const supabase = await createServerSupabaseClient();
 
-    // Only return approved letters to the public
+    // Only return approved letters with public fields
     const { data, error } = await supabase
       .from('letters')
-      .select('*')
+      .select('id, content, author, is_anonymous, lat, lng, city, created_at')
       .eq('status', 'approved')
       .order('created_at', { ascending: false })
-      .limit(500);
+      .range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Error fetching letters:', error);
@@ -27,8 +32,6 @@ export async function GET() {
       );
     }
 
-    // Return with cache headers for Vercel edge caching
-    // 30-second cache with stale-while-revalidate for up to 60 seconds
     return NextResponse.json(data || [], {
       headers: {
         'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
