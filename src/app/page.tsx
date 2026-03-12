@@ -55,7 +55,7 @@ export default function HomePage() {
 
         {/* Car image — mobile (portrait, car at bottom) */}
         <Image
-          src="/car-bg-mobile-v3.jpg"
+          src="/car-bg-mobile-v4.jpg"
           alt=""
           fill
           priority
