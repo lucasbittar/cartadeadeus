@@ -83,20 +83,6 @@ export function TextOverlayOG({ letter }: TextOverlayOGProps) {
           </span>
         </div>
 
-        {/* Separator */}
-        <span style={{ color: '#999999', fontSize: '18px' }}>·</span>
-
-        {/* Author */}
-        <p
-          style={{
-            fontSize: '18px',
-            color: '#999999',
-            fontFamily: 'Playfair Display, serif',
-            fontStyle: 'italic',
-          }}
-        >
-          {letter.is_anonymous ? 'Anônimo' : letter.author || 'Anônimo'}
-        </p>
       </div>
     </div>
   );

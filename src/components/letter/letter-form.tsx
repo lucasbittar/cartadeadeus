@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+
 import { CitySearch } from './city-search';
 import { useLetterStore } from '@/store/letter-store';
 import { copy } from '@/constants/copy';
@@ -33,7 +33,6 @@ export function LetterForm() {
   const {
     form,
     setContent,
-    setIsAnonymous,
     setAuthor,
     setSelectedCity,
     resetForm,
@@ -75,8 +74,8 @@ export function LetterForm() {
 
     mutation.mutate({
       content: form.content.trim(),
-      author: form.isAnonymous ? undefined : form.author,
-      is_anonymous: form.isAnonymous,
+      author: form.author || undefined,
+      is_anonymous: true,
       lat: form.selectedCity.lat,
       lng: form.selectedCity.lng,
       city: form.selectedCity.fullName,
@@ -103,32 +102,12 @@ export function LetterForm() {
         onChange={setSelectedCity}
       />
 
-      <div className="space-y-4">
-        <Switch
-          checked={form.isAnonymous}
-          onChange={setIsAnonymous}
-          label={copy.form.anonymousLabel}
-        />
-
-        <motion.div
-          initial={false}
-          animate={{
-            height: form.isAnonymous ? 0 : 'auto',
-            opacity: form.isAnonymous ? 0 : 1,
-          }}
-          transition={{ duration: 0.2 }}
-          className="overflow-hidden"
-        >
-          {!form.isAnonymous && (
-            <Input
-              id="author-name"
-              placeholder="Seu nome"
-              value={form.author}
-              onChange={(e) => setAuthor(e.target.value)}
-            />
-          )}
-        </motion.div>
-      </div>
+      <Input
+        id="author-name"
+        placeholder="Seu nome"
+        value={form.author}
+        onChange={(e) => setAuthor(e.target.value)}
+      />
 
       {error && (
         <motion.p

@@ -4,7 +4,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Modal } from '@/components/ui/modal';
-import { AuthorName } from '@/components/ui/author-name';
 import { useLetterStore } from '@/store/letter-store';
 import { formatDate } from '@/lib/utils';
 import type { Letter } from '@/types';
@@ -72,11 +71,6 @@ export function LetterPreviewModal() {
           </blockquote>
 
           <div className="flex items-center justify-between text-sm text-foreground/50">
-            {letter.is_anonymous ? (
-              <span>Anônimo</span>
-            ) : (
-              <AuthorName name={letter.author || 'Anônimo'} />
-            )}
             <span>{formatDate(letter.created_at)}</span>
           </div>
         </motion.div>

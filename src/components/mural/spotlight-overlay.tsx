@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AuthorName } from '@/components/ui/author-name';
-import { copy } from '@/constants/copy';
 import { useReducedMotion } from '@/hooks';
 import type { Letter } from '@/types';
 
@@ -70,10 +68,6 @@ export function SpotlightOverlay({ letter, isActive }: SpotlightOverlayProps) {
     }
   }, [isActive]);
 
-  const authorName = letter?.is_anonymous
-    ? copy.marquee.anonymous
-    : letter?.author || copy.marquee.anonymous;
-
   return (
     <AnimatePresence>
       {isActive && letter && (
@@ -125,20 +119,15 @@ export function SpotlightOverlay({ letter, isActive }: SpotlightOverlayProps) {
               &rdquo;
             </span>
 
-            {/* Author and city */}
+            {/* City */}
             <motion.div
               className="mt-10 md:mt-12 text-center"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5, ease: easing }}
             >
-              <p className="font-jetbrains text-lg md:text-xl">
-                <AuthorName
-                  name={authorName}
-                  className="text-[#CB4767] font-medium"
-                />
-                <span className="text-white/40 mx-3">&middot;</span>
-                <span className="text-white/60">{letter.city}</span>
+              <p className="font-jetbrains text-lg md:text-xl text-white/60">
+                {letter.city}
               </p>
             </motion.div>
           </motion.div>

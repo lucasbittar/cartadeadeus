@@ -82,17 +82,6 @@ export function TextOverlayStory({ letter }: TextOverlayStoryProps) {
           </span>
         </div>
 
-        {/* Author */}
-        <p
-          style={{
-            fontSize: '26px',
-            color: '#999999',
-            fontFamily: 'Playfair Display, serif',
-            fontStyle: 'italic',
-          }}
-        >
-          {letter.is_anonymous ? 'Anônimo' : letter.author || 'Anônimo'}
-        </p>
       </div>
     </div>
   );

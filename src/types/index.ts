@@ -3,13 +3,13 @@ export type LetterStatus = 'pending' | 'approved' | 'rejected';
 export interface Letter {
   id: string;
   content: string;
-  author: string | null;
-  is_anonymous: boolean;
+  author?: string | null;
+  is_anonymous?: boolean;
   lat: number;
   lng: number;
   city: string;
   created_at: string;
-  // Moderation fields
+  // Moderation fields (present in admin responses)
   status: LetterStatus;
   flagged: boolean;
   flag_reason: string | null;
