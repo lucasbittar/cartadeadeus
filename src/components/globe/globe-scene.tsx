@@ -55,11 +55,9 @@ function LetterPoint({ marker, onClick }: LetterPointProps) {
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Gentle floating animation
+      // Gentle floating animation — zero allocations per frame
       const float = Math.sin(state.clock.elapsedTime * 1.5 + marker.lat * 0.05) * 0.003;
-      groupRef.current.position.copy(
-        position.clone().add(normal.clone().multiplyScalar(float))
-      );
+      groupRef.current.position.copy(position).addScaledVector(normal, float);
     }
   });
 

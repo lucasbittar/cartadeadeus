@@ -11,14 +11,6 @@ import { LetterPreviewModal } from '@/components/letter/letter-preview';
 import { ShareModal } from '@/components/share/share-modal';
 import { copy } from '@/constants/copy';
 
-const FallingPapers = dynamic(
-  () =>
-    import('@/components/effects/falling-papers').then(
-      (mod) => mod.FallingPapers
-    ),
-  { ssr: false }
-);
-
 const LettersMarquee = dynamic(
   () =>
     import('@/components/letters').then(
@@ -63,7 +55,7 @@ export default function HomePage() {
 
         {/* Car image — mobile (portrait, car at bottom) */}
         <Image
-          src="/car-bg-mobile.jpg"
+          src="/car-bg-mobile-v3.jpg"
           alt=""
           fill
           priority
@@ -88,9 +80,6 @@ export default function HomePage() {
         className="fixed inset-0 z-[1] opacity-[0.025] pointer-events-none mix-blend-soft-light"
         style={{ backgroundImage: NOISE_URL, backgroundRepeat: 'repeat' }}
       />
-
-      {/* Falling papers effect */}
-      <FallingPapers count={20} />
 
       {/* Main content */}
       <div className="relative z-20">

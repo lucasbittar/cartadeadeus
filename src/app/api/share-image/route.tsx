@@ -7,10 +7,15 @@ import { TextOverlayStory } from '@/lib/satori/templates/text-overlay-story';
 import { TextOverlayOG } from '@/lib/satori/templates/text-overlay-og';
 import { CountdownOverlayStory } from '@/lib/satori/templates/countdown-overlay-story';
 import type { Letter } from '@/types';
+import { checkRateLimit, shareImageRateLimiter } from '@/lib/rate-limit';
 
 type ShareFormat = 'story' | 'og' | 'countdown';
 
 // Body size limits configured at platform level (vercel.json) if needed
+
+// Module-level caches — persist across warm requests in the same serverless instance
+let cachedFonts: { playfair: ArrayBuffer; jetbrains: ArrayBuffer } | null = null;
+const cachedBackgrounds = new Map<string, Buffer>();
 
 async function loadFont(url: string): Promise<ArrayBuffer> {
   const response = await fetch(url);
@@ -20,17 +25,33 @@ async function loadFont(url: string): Promise<ArrayBuffer> {
   return response.arrayBuffer();
 }
 
+async function getFonts() {
+  if (cachedFonts) return cachedFonts;
+  const [playfair, jetbrains] = await Promise.all([
+    loadFont('https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebukDQ.ttf'),
+    loadFont('https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPQ.ttf'),
+  ]);
+  cachedFonts = { playfair, jetbrains };
+  return cachedFonts;
+}
+
 async function loadBackgroundImage(format: ShareFormat, width: number, height: number): Promise<Buffer> {
+  const cacheKey = `${format}-${width}x${height}`;
+  const cached = cachedBackgrounds.get(cacheKey);
+  if (cached) return cached;
+
   // Countdown uses its own background; story and og use their respective ones
   const bgFormat = format === 'countdown' ? 'story-cc' : format;
   const imagePath = path.join(process.cwd(), 'public', `share-bg-${bgFormat}.png`);
   try {
     const imageBuffer = await fs.readFile(imagePath);
     // Resize background to exact dimensions to ensure composite works
-    return await sharp(imageBuffer)
+    const resized = await sharp(imageBuffer)
       .resize(width, height, { fit: 'fill' })
       .png()
       .toBuffer();
+    cachedBackgrounds.set(cacheKey, resized);
+    return resized;
   } catch (err) {
     // If background image doesn't exist yet, throw a helpful error
     if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
@@ -51,6 +72,22 @@ interface CountdownData {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 20 requests/min per IP
+    const rateLimit = await checkRateLimit(request, shareImageRateLimiter);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(rateLimit.limit),
+            'X-RateLimit-Remaining': String(rateLimit.remaining),
+            'X-RateLimit-Reset': String(rateLimit.reset),
+          },
+        }
+      );
+    }
+
     const body = await request.json();
     const { letter, format = 'story', countdown } = body as {
       letter?: Letter;
@@ -75,11 +112,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Load fonts
-    const [playfairFont, jetbrainsFont] = await Promise.all([
-      loadFont('https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKebukDQ.ttf'),
-      loadFont('https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxjPQ.ttf'),
-    ]);
+    // Load fonts (cached across warm requests)
+    const { playfair: playfairFont, jetbrains: jetbrainsFont } = await getFonts();
 
     const isStoryFormat = format === 'story' || format === 'countdown';
     const width = isStoryFormat ? 1080 : 1200;

@@ -9,12 +9,26 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || '',
 });
 
-// Configure rate limiter: 5 requests per hour per IP
+// Configure rate limiters per endpoint
 export const letterRateLimiter = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(5, '1 h'),
   analytics: true,
   prefix: 'ratelimit:letters',
+});
+
+export const shareImageRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:share-image',
+});
+
+export const citiesRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, '1 m'),
+  analytics: true,
+  prefix: 'ratelimit:cities',
 });
 
 // Get client IP from request headers (works with Vercel's edge network)
@@ -51,14 +65,17 @@ export interface RateLimitResult {
 }
 
 // Rate limit check that gracefully degrades if Redis is not configured
-export async function checkRateLimit(request: NextRequest): Promise<RateLimitResult> {
+export async function checkRateLimit(
+  request: NextRequest,
+  limiter: Ratelimit = letterRateLimiter,
+): Promise<RateLimitResult> {
   if (!isRateLimitEnabled()) {
     // If Redis is not configured, allow all requests (development mode)
     return { success: true, limit: 5, remaining: 5, reset: Date.now() };
   }
 
   const ip = getClientIP(request);
-  const { success, limit, remaining, reset } = await letterRateLimiter.limit(ip);
+  const { success, limit, remaining, reset } = await limiter.limit(ip);
 
   return { success, limit, remaining, reset };
 }

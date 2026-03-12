@@ -5,7 +5,9 @@ export const copy = {
     subtitle: 'Fresno',
   },
   hero: {
-    description: 'Escreva sua carta de adeus. Para alguém, para um momento, para uma versão de você que ficou pelo caminho.',
+    headline: 'Escreva aqui sua Carta de Adeus.',
+    body: 'Todas elas precisam existir. Todas elas são anônimas, mas precisam existir.',
+    closing: 'Deposite aqui seu adeus para alguém, para algo, para uma versão de você que você não quer mais ser.',
     cta: 'Escreva sua carta',
     albumInfo: 'Fresno • Novo Álbum',
   },

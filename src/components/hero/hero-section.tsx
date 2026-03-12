@@ -27,12 +27,12 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative min-h-[100dvh] overflow-hidden">
       {/* ——— Content ——— */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-start md:justify-between">
+      <div className="relative z-10 min-h-[100dvh] flex flex-col items-center">
         {/* Top: Logo */}
         <motion.div
-          className="flex flex-col items-center pt-12 md:pt-16 lg:pt-20"
+          className="flex flex-col items-center pt-10 md:pt-16 lg:pt-20"
           style={{ y: logoY, opacity: logoOpacity }}
         >
           <motion.div
@@ -56,40 +56,93 @@ export function HeroSection() {
           </motion.div>
         </motion.div>
 
-        {/* Spacer — mobile: small gap; desktop: push text to bottom */}
-        <div className="flex-1 max-h-16 md:max-h-none" />
+        {/* Desktop spacer — pushes text+CTA to bottom */}
+        <div className="hidden md:block md:flex-1" />
 
-        {/* Bottom cluster: Album badge + Description + CTA */}
+        {/* Bottom cluster: Album badge + Text + CTA */}
         <motion.div
-          className="flex flex-col items-center pb-20 md:pb-28 px-6"
+          className="flex flex-col items-center px-6 mt-4 md:mt-0 md:pb-28"
           style={{ y: textY, opacity: textOpacity }}
         >
           <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
-            className="text-white/80 text-[10px] md:text-xs font-medium tracking-[0.35em] uppercase mb-5 md:mb-6 text-shadow-cast"
+            className="text-white/80 text-[10px] md:text-xs font-medium tracking-[0.35em] uppercase mb-4 md:mb-6 text-shadow-cast"
           >
             {copy.hero.albumInfo}
           </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.8,
-              duration: 0.9,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="font-playfair text-base md:text-xl lg:text-4xl text-white/90 italic max-w-lg md:max-w-2xl mx-auto mb-8 text-center leading-relaxed text-shadow-cast"
-          >
-            {copy.hero.description}
-          </motion.p>
+          <div className="max-w-[280px] md:max-w-xl lg:max-w-2xl mx-auto text-center space-y-3 md:space-y-5">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.8,
+                duration: 0.9,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="font-playfair text-lg md:text-2xl lg:text-4xl text-white italic leading-snug md:leading-snug text-shadow-cast"
+            >
+              {copy.hero.headline}
+            </motion.p>
 
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 1.0,
+                duration: 0.9,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="font-playfair text-sm md:text-base lg:text-xl text-white italic leading-relaxed text-shadow-cast"
+            >
+              {copy.hero.body}
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 1.2,
+                duration: 0.9,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="font-playfair text-sm md:text-base lg:text-lg text-white italic leading-relaxed text-shadow-cast"
+            >
+              {copy.hero.closing}
+            </motion.p>
+          </div>
+
+          {/* CTA — on desktop sits right below text; on mobile hidden here */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0, duration: 0.7 }}
+            transition={{ delay: 1.5, duration: 0.7 }}
+            className="hidden md:block mt-10"
+          >
+            <Button
+              size="lg"
+              onClick={() => setFormModalOpen(true)}
+              className="shadow-xl shadow-burgundy/20 hover:shadow-2xl hover:shadow-burgundy/30 transition-all duration-300 hover:scale-105"
+            >
+              {copy.hero.cta}
+            </Button>
+          </motion.div>
+        </motion.div>
+
+        {/* Mobile spacer — lets the car image breathe */}
+        <div className="flex-1 md:hidden" />
+
+        {/* Mobile CTA — anchored near bottom */}
+        <motion.div
+          className="pb-16 md:hidden"
+          style={{ y: textY, opacity: textOpacity }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.7 }}
           >
             <Button
               size="lg"
@@ -106,7 +159,7 @@ export function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 1 }}
+        transition={{ delay: 2.2, duration: 1 }}
         style={{ opacity: scrollIndicatorOpacity }}
         className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 cursor-pointer"
         onClick={handleScrollDown}

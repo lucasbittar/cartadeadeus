@@ -10,7 +10,7 @@ interface LetterCardProps {
   startTyping?: boolean; // whether to start the typewriter effect
 }
 
-export function LetterCard({ letter, delay = 0, startTyping = false }: LetterCardProps) {
+export const LetterCard = React.memo(function LetterCard({ letter, delay = 0, startTyping = false }: LetterCardProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -86,4 +86,4 @@ export function LetterCard({ letter, delay = 0, startTyping = false }: LetterCar
       </div>
     </motion.div>
   );
-}
+});

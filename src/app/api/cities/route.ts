@@ -6,6 +6,7 @@ import {
   setCachedReverseGeocode,
   type GeocodeResult,
 } from '@/lib/geocode-cache';
+import { checkRateLimit, citiesRateLimiter } from '@/lib/rate-limit';
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -29,6 +30,22 @@ interface GoogleGeocodingResponse {
 }
 
 export async function GET(request: NextRequest) {
+  // Rate limit: 30 requests/min per IP
+  const rateLimit = await checkRateLimit(request, citiesRateLimiter);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': String(rateLimit.limit),
+          'X-RateLimit-Remaining': String(rateLimit.remaining),
+          'X-RateLimit-Reset': String(rateLimit.reset),
+        },
+      }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
   const lat = searchParams.get('lat');
