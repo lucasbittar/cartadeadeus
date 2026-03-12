@@ -48,12 +48,12 @@ export function CountdownUnit({ value, label, delay = 0 }: CountdownUnitProps) {
             scale: isAnimating ? [1, 1.05, 1] : 1,
           }}
           transition={{ duration: 0.3 }}
-          className="font-playfair text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-burgundy tabular-nums leading-none"
+          className="font-playfair text-shadow-cast text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-burgundy tabular-nums leading-none"
         >
           {formattedValue}
         </motion.span>
       </AnimatePresence>
-      <span className="font-jetbrains text-[10px] sm:text-xs uppercase tracking-widest text-foreground/40 mt-2">
+      <span className="font-jetbrains text-[10px] sm:text-xs uppercase tracking-widest text-foreground/50 mt-4">
         {label}
       </span>
     </motion.div>

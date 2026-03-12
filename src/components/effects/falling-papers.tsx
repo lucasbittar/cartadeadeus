@@ -18,12 +18,12 @@ interface Paper {
 }
 
 const PAPER_COLORS = [
-  'rgba(208, 213, 211, 0.7)',  // Soft gray-green
-  'rgba(200, 206, 202, 0.6)',  // Muted sage
-  'rgba(215, 220, 218, 0.65)', // Light gray
-  'rgba(195, 202, 200, 0.55)', // Deeper gray-green
-  'rgba(220, 225, 223, 0.5)',  // Almost white
-  'rgba(188, 196, 194, 0.6)',  // Medium gray
+  'rgba(208, 213, 211, 0.4)',  // Soft gray-green
+  'rgba(200, 206, 202, 0.3)',  // Muted sage
+  'rgba(215, 220, 218, 0.35)', // Light gray
+  'rgba(195, 202, 200, 0.3)',  // Deeper gray-green
+  'rgba(220, 225, 223, 0.25)', // Almost white
+  'rgba(188, 196, 194, 0.3)',  // Medium gray
 ];
 
 function createPaper(id: number, viewportWidth: number): Paper {

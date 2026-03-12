@@ -41,10 +41,10 @@ export default function HomePage() {
   const { scrollY } = useScroll();
 
   // Dim the entire backdrop slightly as user scrolls past the hero
-  const backdropOpacity = useTransform(scrollY, [0, 600, 1200], [1, 0.6, 0.4]);
+  const backdropOpacity = useTransform(scrollY, [0, 600, 1200], [1, 0.5, 0.3]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f0f5f3]">
+    <main className="relative min-h-screen overflow-hidden bg-[#0D0D0F]">
       {/* ——— Fixed backdrop: car + vignette + bottom gradient + noise ——— */}
       <motion.div
         className="fixed inset-0 z-0 pointer-events-none"
@@ -77,7 +77,7 @@ export default function HomePage() {
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.12) 100%)',
+              'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.35) 100%)',
           }}
         />
 
@@ -85,7 +85,7 @@ export default function HomePage() {
 
       {/* Fixed noise texture (separate so it doesn't dim) */}
       <div
-        className="fixed inset-0 z-[1] opacity-[0.012] pointer-events-none mix-blend-multiply"
+        className="fixed inset-0 z-[1] opacity-[0.025] pointer-events-none mix-blend-soft-light"
         style={{ backgroundImage: NOISE_URL, backgroundRepeat: 'repeat' }}
       />
 
@@ -133,7 +133,7 @@ export default function HomePage() {
               </div>
 
               {/* Personal dedication */}
-              <p className="font-playfair text-lg md:text-xl text-white/70 leading-relaxed mb-8">
+              <p className="font-playfair text-white/70 leading-relaxed mb-8">
                 Uma homenagem feita com <span className="text-burgundy">&#10084;</span> por{' '}
                 <a
                   href="https://instagram.com/lucasbittar.music"

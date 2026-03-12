@@ -185,8 +185,8 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
           {copy.form.locationLabel}
         </label>
         <div className={cn(
-          'w-full px-4 py-3 rounded-lg border border-foreground/10',
-          'bg-white text-foreground/50',
+          'w-full px-4 py-3 rounded-lg border border-white/[0.08]',
+          'bg-[#141416] text-foreground/50',
           'flex items-center gap-3'
         )}>
           <motion.div
@@ -208,8 +208,8 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
           {copy.form.locationLabel}
         </label>
         <div className={cn(
-          'w-full px-4 py-3 rounded-lg border border-foreground/10',
-          'bg-white text-foreground',
+          'w-full px-4 py-3 rounded-lg border border-white/[0.08]',
+          'bg-[#141416] text-foreground',
           'flex items-center justify-between'
         )}>
           <div className="flex items-center gap-2">
@@ -242,8 +242,8 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
             value={cityName}
             onChange={(e) => setCityName(e.target.value)}
             className={cn(
-              'w-full px-4 py-3 pr-24 rounded-lg border border-foreground/10',
-              'bg-white text-foreground placeholder:text-foreground/40',
+              'w-full px-4 py-3 pr-24 rounded-lg border border-white/[0.08]',
+              'bg-[#141416] text-foreground placeholder:text-foreground/40',
               'focus:outline-none focus:ring-2 focus:ring-burgundy/30 focus:border-burgundy',
               'transition-all duration-200'
             )}
@@ -303,8 +303,8 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
           onFocus={() => setIsOpen(true)}
           placeholder={copy.form.locationPlaceholder}
           className={cn(
-            'w-full px-4 py-3 pr-24 rounded-lg border border-foreground/10',
-            'bg-white text-foreground placeholder:text-foreground/40',
+            'w-full px-4 py-3 pr-24 rounded-lg border border-white/[0.08]',
+            'bg-[#141416] text-foreground placeholder:text-foreground/40',
             'focus:outline-none focus:ring-2 focus:ring-burgundy/30 focus:border-burgundy',
             'transition-all duration-200'
           )}
@@ -324,7 +324,7 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute z-50 w-full mt-1 bg-white border border-foreground/10 rounded-lg shadow-lg max-h-60 overflow-auto"
+            className="absolute z-50 w-full mt-1 bg-[#1C1C20] border border-white/[0.08] rounded-lg shadow-lg max-h-60 overflow-auto"
           >
             {isSearching ? (
               <li className="px-4 py-3 text-foreground/50 text-sm">

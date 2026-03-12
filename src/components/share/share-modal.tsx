@@ -109,7 +109,7 @@ export function ShareModal() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          className="w-16 h-16 mx-auto mb-6 rounded-full bg-burgundy/10 flex items-center justify-center"
+          className="w-16 h-16 mx-auto mb-6 rounded-full bg-burgundy/15 flex items-center justify-center"
         >
           <svg
             width="32"

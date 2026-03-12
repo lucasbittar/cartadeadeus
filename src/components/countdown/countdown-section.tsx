@@ -22,7 +22,7 @@ export function CountdownSection() {
           transition={{ duration: 0.8, delay: 0 }}
           className="text-center mb-4 md:mb-6"
         >
-          <span className="inline-flex items-center gap-3 text-burgundy text-sm md:text-base tracking-[0.2em] uppercase font-medium">
+          <span className="inline-flex text-shadow-cast items-center gap-3 text-burgundy text-sm md:text-base tracking-[0.2em] uppercase font-medium">
             <span className="text-burgundy/40">&#10022;</span>
             {copy.countdown.date}
             <span className="text-burgundy/40">&#10022;</span>
@@ -36,7 +36,7 @@ export function CountdownSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="text-center mb-10 md:mb-14"
         >
-          <p className="font-playfair text-2xl md:text-3xl lg:text-4xl italic text-foreground/80">
+          <p className="font-playfair text-2xl text-shadow-cast md:text-3xl lg:text-4xl italic text-foreground/80">
             &ldquo;{copy.countdown.tagline}&rdquo;
           </p>
         </motion.div>
@@ -51,7 +51,7 @@ export function CountdownSection() {
           transition={{ duration: 0.8, delay: 1 }}
           className="text-center mt-10 md:mt-14"
         >
-          <p className="text-foreground/50 text-sm md:text-base">
+          <p className="text-foreground/50 text-shadow-cast text-sm md:text-base">
             {copy.countdown.subtitle}
           </p>
         </motion.div>

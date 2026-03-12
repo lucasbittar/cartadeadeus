@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    --background: 240 8% 5%;
+    --foreground: 27 25% 93%;
     --burgundy: 345 75% 31%;
   }
 
@@ -18,7 +18,7 @@
   }
 
   ::selection {
-    @apply bg-burgundy/20 text-burgundy;
+    @apply bg-burgundy/30 text-burgundy-200;
   }
 }
 
@@ -28,7 +28,7 @@
   }
 
   .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
+    @apply bg-[#1C1C20]/80 backdrop-blur-md border border-white/5;
   }
 }
 

@@ -9,8 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#FFFFFF',
-        foreground: '#1A1A1A',
+        background: '#0D0D0F',
+        foreground: '#F0ECE8',
+        surface: '#1C1C20',
         burgundy: {
           DEFAULT: '#8B1538',
           50: '#F9E8EC',
@@ -24,7 +25,7 @@ const config: Config = {
           800: '#380816',
           900: '#1C040B',
         },
-        cream: '#FDF8F5',
+        cream: '#1A1A1E',
       },
       fontFamily: {
         playfair: ['var(--font-playfair)', 'serif'],

@@ -81,7 +81,7 @@ export function HeroSection() {
               duration: 0.9,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="font-playfair text-base md:text-xl lg:text-2xl text-white/90 italic max-w-lg md:max-w-2xl mx-auto mb-8 text-center leading-relaxed text-shadow-cast"
+            className="font-playfair text-base md:text-xl lg:text-4xl text-white/90 italic max-w-lg md:max-w-2xl mx-auto mb-8 text-center leading-relaxed text-shadow-cast"
           >
             {copy.hero.description}
           </motion.p>
@@ -114,25 +114,20 @@ export function HeroSection() {
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="flex flex-col items-center gap-2"
+          className="flex flex-col items-center"
         >
-          <span
-            className="text-white/60 text-xs uppercase tracking-[0.2em] text-shadow-cast"
-          >
-            Explorar
-          </span>
           <svg
-            width="16"
-            height="16"
+            width="32"
+            height="32"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-white/50 drop-shadow-cast"
+            className="text-white/60"
           >
-            <path d="M12 5v14M19 12l-7 7-7-7" />
+            <path d="M6 9l6 6 6-6" />
           </svg>
         </motion.div>
       </motion.div>

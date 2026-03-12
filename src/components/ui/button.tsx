@@ -26,7 +26,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary:
         'bg-burgundy text-white hover:bg-burgundy-600 focus:ring-burgundy/50',
       secondary:
-        'bg-white text-burgundy border-2 border-burgundy hover:bg-burgundy/5 focus:ring-burgundy/30',
+        'bg-transparent text-burgundy-200 border-2 border-burgundy hover:bg-burgundy/10 focus:ring-burgundy/30',
       ghost:
         'bg-transparent text-foreground hover:bg-foreground/5 focus:ring-foreground/20',
     };
