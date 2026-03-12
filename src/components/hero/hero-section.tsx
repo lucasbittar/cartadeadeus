@@ -1,25 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { copy } from '@/constants/copy';
 import { Button } from '@/components/ui/button';
 import { useLetterStore } from '@/store/letter-store';
 
-const NOISE_URL = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
-
 export function HeroSection() {
   const setFormModalOpen = useLetterStore((state) => state.setFormModalOpen);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const { scrollY } = useScroll();
 
-  // Background: slow parallax, subtle zoom, fades out on scroll
-  const bgY = useTransform(scrollY, [0, 1000], [0, -120]);
-  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.06]);
-  const bgOpacity = useTransform(scrollY, [0, 400, 700], [1, 0.6, 0.15]);
-
-  // Logo + badge: exits faster
+  // Logo: exits faster
   const logoY = useTransform(scrollY, [0, 600], [0, -180]);
   const logoOpacity = useTransform(scrollY, [0, 450], [1, 0]);
 
@@ -27,55 +19,15 @@ export function HeroSection() {
   const textY = useTransform(scrollY, [0, 600], [0, -90]);
   const textOpacity = useTransform(scrollY, [0, 500], [1, 0]);
 
+  // Scroll indicator: fades out quickly
+  const scrollIndicatorOpacity = useTransform(scrollY, [0, 200], [1, 0]);
+
+  const handleScrollDown = () => {
+    document.getElementById('content')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#f0f5f3]">
-      {/* ——— Full-bleed background image with parallax ——— */}
-      <motion.div
-        className="absolute inset-0 w-full h-[130vh] -top-[10vh]"
-        style={{ y: bgY, scale: bgScale, opacity: bgOpacity }}
-      >
-        <Image
-          src="/car-bg.jpg"
-          alt=""
-          fill
-          priority
-          quality={90}
-          className={`
-            object-cover object-center
-            transition-opacity duration-[1.5s] ease-out
-            ${isImageLoaded ? 'opacity-100' : 'opacity-0'}
-          `}
-          onLoad={() => setIsImageLoaded(true)}
-          sizes="100vw"
-        />
-      </motion.div>
-
-      {/* ——— Cinematic overlays ——— */}
-
-      {/* Vignette — enhances the studio shot's natural depth */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.12) 100%)',
-        }}
-      />
-
-      {/* Bottom gradient — text readability + seamless transition to next section */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[55vh] pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to bottom, transparent 0%, rgba(240,245,243,0.3) 30%, rgba(240,245,243,0.75) 60%, #f0f5f3 100%)',
-        }}
-      />
-
-      {/* Noise texture */}
-      <div
-        className="absolute inset-0 opacity-[0.012] pointer-events-none mix-blend-multiply"
-        style={{ backgroundImage: NOISE_URL, backgroundRepeat: 'repeat' }}
-      />
-
+    <section className="relative min-h-screen overflow-hidden">
       {/* ——— Content ——— */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-between">
         {/* Top: Logo */}
@@ -160,7 +112,9 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.8, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20"
+        style={{ opacity: scrollIndicatorOpacity }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 cursor-pointer"
+        onClick={handleScrollDown}
       >
         <motion.div
           animate={{ y: [0, 6, 0] }}

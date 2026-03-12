@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { HeroSection } from '@/components/hero/hero-section';
 import { GlobeSection } from '@/components/globe/globe-section';
 import { LetterModal } from '@/components/letter/letter-modal';
@@ -34,9 +35,57 @@ const CountdownSection = dynamic(
   { ssr: false }
 );
 
+const NOISE_URL = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
+
 export default function HomePage() {
+  const { scrollY } = useScroll();
+
+  // Dim the entire backdrop slightly as user scrolls past the hero
+  const backdropOpacity = useTransform(scrollY, [0, 600, 1200], [1, 0.5, 0.3]);
+
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden bg-[#f0f5f3]">
+      {/* ——— Fixed backdrop: car + vignette + bottom gradient + noise ——— */}
+      <motion.div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{ opacity: backdropOpacity }}
+      >
+        {/* Car image */}
+        <Image
+          src="/car-bg.jpg"
+          alt=""
+          fill
+          priority
+          quality={90}
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+
+        {/* Vignette */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.12) 100%)',
+          }}
+        />
+
+        {/* Bottom gradient — readability for content below */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[55vh]"
+          style={{
+            background:
+              'linear-gradient(to bottom, transparent 0%, rgba(240,245,243,0.3) 30%, rgba(240,245,243,0.75) 60%, #f0f5f3 100%)',
+          }}
+        />
+      </motion.div>
+
+      {/* Fixed noise texture (separate so it doesn't dim) */}
+      <div
+        className="fixed inset-0 z-[1] opacity-[0.012] pointer-events-none mix-blend-multiply"
+        style={{ backgroundImage: NOISE_URL, backgroundRepeat: 'repeat' }}
+      />
+
       {/* Falling papers effect */}
       <FallingPapers count={20} />
 
@@ -45,7 +94,7 @@ export default function HomePage() {
         <HeroSection />
 
         {/* Globe section with matching mint background */}
-        <div className="relative bg-[#f0f5f3]">
+        <div id="content" className="relative">
           <GlobeSection />
 
           {/* Letters marquee section */}
