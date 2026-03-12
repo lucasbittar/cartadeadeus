@@ -10,14 +10,6 @@ import { LetterPreviewModal } from '@/components/letter/letter-preview';
 import { ShareModal } from '@/components/share/share-modal';
 import { copy } from '@/constants/copy';
 
-const HeroBackground = dynamic(
-  () =>
-    import('@/components/effects/hero-background').then(
-      (mod) => mod.HeroBackground
-    ),
-  { ssr: false }
-);
-
 const FallingPapers = dynamic(
   () =>
     import('@/components/effects/falling-papers').then(
@@ -45,23 +37,15 @@ const CountdownSection = dynamic(
 export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
-      {/* Cinematic background with parallax */}
-      <div className="fixed inset-0 z-0">
-        <HeroBackground />
-      </div>
-
       {/* Falling papers effect */}
-      <FallingPapers count={40} />
+      <FallingPapers count={20} />
 
       {/* Main content */}
       <div className="relative z-20">
         <HeroSection />
 
         {/* Globe section with matching mint background */}
-        <div
-          className="relative"
-          style={{ backgroundColor: 'transparent' }}
-        >
+        <div className="relative bg-[#f0f5f3]">
           <GlobeSection />
 
           {/* Letters marquee section */}

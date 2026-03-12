@@ -147,7 +147,7 @@ export function FallingPapers({ count = 35 }: { count?: number }) {
 
   if (!mounted || prefersReducedMotion) {
     return (
-      <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
         {Array.from({ length: 12 }).map((_, i) => (
           <div
             key={i}
@@ -169,7 +169,7 @@ export function FallingPapers({ count = 35 }: { count?: number }) {
   }
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
       {papers.map((paper) => (
         <PaperSheet
           key={paper.id}

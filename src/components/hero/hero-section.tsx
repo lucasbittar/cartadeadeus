@@ -1,79 +1,161 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { copy } from '@/constants/copy';
 import { Button } from '@/components/ui/button';
 import { useLetterStore } from '@/store/letter-store';
 
+const NOISE_URL = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
+
 export function HeroSection() {
   const setFormModalOpen = useLetterStore((state) => state.setFormModalOpen);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const { scrollY } = useScroll();
+
+  // Background: slow parallax, subtle zoom, fades out on scroll
+  const bgY = useTransform(scrollY, [0, 1000], [0, -120]);
+  const bgScale = useTransform(scrollY, [0, 1000], [1, 1.06]);
+  const bgOpacity = useTransform(scrollY, [0, 400, 700], [1, 0.6, 0.15]);
+
+  // Logo + badge: exits faster
+  const logoY = useTransform(scrollY, [0, 600], [0, -180]);
+  const logoOpacity = useTransform(scrollY, [0, 450], [1, 0]);
+
+  // Bottom text: medium speed exit
+  const textY = useTransform(scrollY, [0, 600], [0, -90]);
+  const textOpacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-end text-center px-4 pb-32 md:pb-40">
-      {/* Floating text content - positioned in the lower third */}
+    <section className="relative min-h-screen overflow-hidden bg-[#f0f5f3]">
+      {/* ——— Full-bleed background image with parallax ——— */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-        className="relative max-w-3xl mx-auto z-20"
+        className="absolute inset-0 w-full h-[130vh] -top-[10vh]"
+        style={{ y: bgY, scale: bgScale, opacity: bgOpacity }}
       >
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
-          className="text-burgundy font-medium tracking-[0.3em] uppercase text-xs md:text-sm mb-5"
-          style={{
-            textShadow: '0 2px 10px rgba(255,255,255,0.8)',
-          }}
-        >
-          {copy.hero.albumInfo}
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="font-playfair text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-5 tracking-tight"
-          style={{
-            textShadow: `
-              0 2px 20px rgba(255,255,255,0.9),
-              0 4px 40px rgba(255,255,255,0.6),
-              0 0 80px rgba(255,255,255,0.4)
-            `,
-          }}
-        >
-          {copy.site.title}
-        </motion.h1>
-
-        <motion.blockquote
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 1 }}
-          className="font-playfair text-lg md:text-2xl text-foreground/70 italic mb-10"
-          style={{
-            textShadow: '0 2px 15px rgba(255,255,255,0.8)',
-          }}
-        >
-          {copy.hero.quote}
-        </motion.blockquote>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.7 }}
-        >
-          <Button
-            size="lg"
-            onClick={() => setFormModalOpen(true)}
-            className="shadow-xl shadow-burgundy/25 hover:shadow-2xl hover:shadow-burgundy/30 transition-all duration-300 hover:scale-105"
-          >
-            {copy.hero.cta}
-          </Button>
-        </motion.div>
+        <Image
+          src="/car-bg.jpg"
+          alt=""
+          fill
+          priority
+          quality={90}
+          className={`
+            object-cover object-center
+            transition-opacity duration-[1.5s] ease-out
+            ${isImageLoaded ? 'opacity-100' : 'opacity-0'}
+          `}
+          onLoad={() => setIsImageLoaded(true)}
+          sizes="100vw"
+        />
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* ——— Cinematic overlays ——— */}
+
+      {/* Vignette — enhances the studio shot's natural depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.12) 100%)',
+        }}
+      />
+
+      {/* Bottom gradient — text readability + seamless transition to next section */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[55vh] pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(240,245,243,0.3) 30%, rgba(240,245,243,0.75) 60%, #f0f5f3 100%)',
+        }}
+      />
+
+      {/* Noise texture */}
+      <div
+        className="absolute inset-0 opacity-[0.012] pointer-events-none mix-blend-multiply"
+        style={{ backgroundImage: NOISE_URL, backgroundRepeat: 'repeat' }}
+      />
+
+      {/* ——— Content ——— */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-between">
+        {/* Top: Logo */}
+        <motion.div
+          className="flex flex-col items-center pt-12 md:pt-16 lg:pt-20"
+          style={{ y: logoY, opacity: logoOpacity }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.4,
+              duration: 1.2,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <h1 className="sr-only">Carta de Adeus</h1>
+            <Image
+              src="/cda-logo.png"
+              alt="Carta de Adeus"
+              width={550}
+              height={370}
+              priority
+              className="max-w-[240px] md:max-w-[380px] lg:max-w-[500px] w-auto h-auto"
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* Spacer — the car image fills the middle naturally */}
+        <div className="flex-1" />
+
+        {/* Bottom cluster: Album badge + Description + CTA */}
+        <motion.div
+          className="flex flex-col items-center pb-20 md:pb-28 px-6"
+          style={{ y: textY, opacity: textOpacity }}
+        >
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
+            className="text-foreground/50 text-[10px] md:text-xs font-medium tracking-[0.35em] uppercase mb-5 md:mb-6"
+            style={{ textShadow: '0 1px 8px rgba(240,245,243,0.9)' }}
+          >
+            {copy.hero.albumInfo}
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.8,
+              duration: 0.9,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="font-playfair text-base md:text-xl lg:text-2xl text-foreground/65 italic max-w-lg md:max-w-2xl mx-auto mb-8 text-center leading-relaxed"
+            style={{
+              textShadow:
+                '0 1px 12px rgba(240,245,243,0.95), 0 2px 24px rgba(240,245,243,0.6)',
+            }}
+          >
+            {copy.hero.description}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.7 }}
+          >
+            <Button
+              size="lg"
+              onClick={() => setFormModalOpen(true)}
+              className="shadow-xl shadow-burgundy/20 hover:shadow-2xl hover:shadow-burgundy/30 transition-all duration-300 hover:scale-105"
+            >
+              {copy.hero.cta}
+            </Button>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* ——— Scroll indicator ——— */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -86,21 +168,21 @@ export function HeroSection() {
           className="flex flex-col items-center gap-2"
         >
           <span
-            className="text-foreground/50 text-xs uppercase tracking-[0.2em]"
-            style={{ textShadow: '0 1px 8px rgba(255,255,255,0.8)' }}
+            className="text-foreground/40 text-xs uppercase tracking-[0.2em]"
+            style={{ textShadow: '0 1px 8px rgba(240,245,243,0.9)' }}
           >
             Explorar
           </span>
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-foreground/40"
+            className="text-foreground/30"
           >
             <path d="M12 5v14M19 12l-7 7-7-7" />
           </svg>
