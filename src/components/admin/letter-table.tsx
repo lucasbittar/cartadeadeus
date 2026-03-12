@@ -39,7 +39,7 @@ function RejectConfirmModal({
         <div className="bg-cream rounded-lg p-4 mb-4">
           <p className="text-sm text-foreground line-clamp-3">{letter.content}</p>
           <p className="mt-2 text-xs text-muted-dark">
-            {letter.is_anonymous ? copy.marquee.anonymous : letter.author || '-'} · {letter.city}
+            {letter.author || copy.marquee.anonymous} · {letter.city}
           </p>
         </div>
 
@@ -204,7 +204,7 @@ export function LetterTable({
           {/* Author & City */}
           <div className="flex items-center gap-2 text-xs text-muted-dark mb-3">
             <span>
-              {letter.is_anonymous ? copy.marquee.anonymous : letter.author || '-'}
+              {letter.author || copy.marquee.anonymous}
             </span>
             <span>&middot;</span>
             <span>{letter.city}</span>
@@ -311,9 +311,7 @@ export function LetterTable({
                 </td>
                 <td className="p-4">
                   <p className="text-sm text-muted-dark">
-                    {letter.is_anonymous
-                      ? copy.marquee.anonymous
-                      : letter.author || '-'}
+                    {letter.author || copy.marquee.anonymous}
                   </p>
                 </td>
                 <td className="p-4">

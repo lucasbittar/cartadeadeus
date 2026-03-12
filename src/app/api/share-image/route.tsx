@@ -21,8 +21,8 @@ async function loadFont(url: string): Promise<ArrayBuffer> {
 }
 
 async function loadBackgroundImage(format: ShareFormat, width: number, height: number): Promise<Buffer> {
-  // Countdown uses the story background
-  const bgFormat = format === 'countdown' ? 'story' : format;
+  // Countdown uses its own background; story and og use their respective ones
+  const bgFormat = format === 'countdown' ? 'story-cc' : format;
   const imagePath = path.join(process.cwd(), 'public', `share-bg-${bgFormat}.png`);
   try {
     const imageBuffer = await fs.readFile(imagePath);

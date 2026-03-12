@@ -29,7 +29,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen overflow-hidden">
       {/* ——— Content ——— */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-between">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-start md:justify-between">
         {/* Top: Logo */}
         <motion.div
           className="flex flex-col items-center pt-12 md:pt-16 lg:pt-20"
@@ -51,13 +51,13 @@ export function HeroSection() {
               width={550}
               height={370}
               priority
-              className="max-w-[240px] md:max-w-[380px] lg:max-w-[500px] w-auto h-auto"
+              className="max-w-[120px] md:max-w-[380px] lg:max-w-[500px] w-auto h-auto"
             />
           </motion.div>
         </motion.div>
 
-        {/* Spacer — the car image fills the middle naturally */}
-        <div className="flex-1" />
+        {/* Spacer — mobile: small gap; desktop: push text to bottom */}
+        <div className="flex-1 max-h-16 md:max-h-none" />
 
         {/* Bottom cluster: Album badge + Description + CTA */}
         <motion.div
@@ -68,8 +68,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
-            className="text-foreground/50 text-[10px] md:text-xs font-medium tracking-[0.35em] uppercase mb-5 md:mb-6"
-            style={{ textShadow: '0 1px 8px rgba(240,245,243,0.9)' }}
+            className="text-white/80 text-[10px] md:text-xs font-medium tracking-[0.35em] uppercase mb-5 md:mb-6 text-shadow-cast"
           >
             {copy.hero.albumInfo}
           </motion.p>
@@ -82,11 +81,7 @@ export function HeroSection() {
               duration: 0.9,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className="font-playfair text-base md:text-xl lg:text-2xl text-foreground/65 italic max-w-lg md:max-w-2xl mx-auto mb-8 text-center leading-relaxed"
-            style={{
-              textShadow:
-                '0 1px 12px rgba(240,245,243,0.95), 0 2px 24px rgba(240,245,243,0.6)',
-            }}
+            className="font-playfair text-base md:text-xl lg:text-2xl text-white/90 italic max-w-lg md:max-w-2xl mx-auto mb-8 text-center leading-relaxed text-shadow-cast"
           >
             {copy.hero.description}
           </motion.p>
@@ -122,8 +117,7 @@ export function HeroSection() {
           className="flex flex-col items-center gap-2"
         >
           <span
-            className="text-foreground/40 text-xs uppercase tracking-[0.2em]"
-            style={{ textShadow: '0 1px 8px rgba(240,245,243,0.9)' }}
+            className="text-white/60 text-xs uppercase tracking-[0.2em] text-shadow-cast"
           >
             Explorar
           </span>
@@ -136,7 +130,7 @@ export function HeroSection() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-foreground/30"
+            className="text-white/50 drop-shadow-cast"
           >
             <path d="M12 5v14M19 12l-7 7-7-7" />
           </svg>

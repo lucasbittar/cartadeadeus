@@ -51,7 +51,7 @@ export function GlobeSection() {
         transition={{ duration: 0.8 }}
         className="max-w-4xl mx-auto text-center mb-12"
       >
-        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4 text-shadow-cast">
           {copy.globe.title}
         </h2>
         <p className="text-foreground/60">

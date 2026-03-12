@@ -37,7 +37,7 @@ function createPaper(id: number, viewportWidth: number): Paper {
     rotateStart: Math.random() * 360,
     rotateEnd: Math.random() * 360 + (Math.random() > 0.5 ? 180 : -180),
     swayAmount: 30 + Math.random() * 60,
-    opacity: 0.4 + Math.random() * 0.4,
+    opacity: 0.15 + Math.random() * 0.2,
     color: PAPER_COLORS[Math.floor(Math.random() * PAPER_COLORS.length)],
   };
 }

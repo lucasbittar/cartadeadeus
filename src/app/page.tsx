@@ -41,7 +41,7 @@ export default function HomePage() {
   const { scrollY } = useScroll();
 
   // Dim the entire backdrop slightly as user scrolls past the hero
-  const backdropOpacity = useTransform(scrollY, [0, 600, 1200], [1, 0.5, 0.3]);
+  const backdropOpacity = useTransform(scrollY, [0, 600, 1200], [1, 0.6, 0.4]);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#f0f5f3]">
@@ -50,14 +50,25 @@ export default function HomePage() {
         className="fixed inset-0 z-0 pointer-events-none"
         style={{ opacity: backdropOpacity }}
       >
-        {/* Car image */}
+        {/* Car image — desktop */}
         <Image
           src="/car-bg.jpg"
           alt=""
           fill
           priority
           quality={90}
-          className="object-cover object-center"
+          className="hidden md:block object-cover object-center"
+          sizes="100vw"
+        />
+
+        {/* Car image — mobile (portrait, car at bottom) */}
+        <Image
+          src="/car-bg-mobile.jpg"
+          alt=""
+          fill
+          priority
+          quality={90}
+          className="block md:hidden object-cover object-bottom"
           sizes="100vw"
         />
 
@@ -70,14 +81,6 @@ export default function HomePage() {
           }}
         />
 
-        {/* Bottom gradient — readability for content below */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[55vh]"
-          style={{
-            background:
-              'linear-gradient(to bottom, transparent 0%, rgba(240,245,243,0.3) 30%, rgba(240,245,243,0.75) 60%, #f0f5f3 100%)',
-          }}
-        />
       </motion.div>
 
       {/* Fixed noise texture (separate so it doesn't dim) */}
