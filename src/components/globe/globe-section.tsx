@@ -38,7 +38,7 @@ async function fetchMarkers(): Promise<LetterMarker[]> {
 export function GlobeSection() {
   const setSelectedLetterId = useLetterStore((state) => state.setSelectedLetterId);
   const globeContainerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(globeContainerRef, { once: true, margin: '200px' });
+  const isInView = useInView(globeContainerRef, { once: true, amount: 0.01 });
 
   const { data: markers = [], isLoading } = useQuery({
     queryKey: ['letters-markers'],
