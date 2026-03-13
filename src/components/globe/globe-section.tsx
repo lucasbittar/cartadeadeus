@@ -3,6 +3,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { useLetterStore } from '@/store/letter-store';
 import { copy } from '@/constants/copy';
 import type { LetterMarker } from '@/types';
@@ -43,7 +44,13 @@ export function GlobeSection() {
 
   return (
     <section className="relative py-16 md:py-16">
-      <div className="max-w-4xl mx-auto text-center mb-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="max-w-4xl mx-auto text-center mb-12"
+      >
         <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4 text-shadow-cast">
           {copy.globe.title}
         </h2>
@@ -59,12 +66,19 @@ export function GlobeSection() {
             copy.globe.emptyState
           )}
         </p>
-      </div>
+      </motion.div>
 
-      <GlobeScene
-        markers={markers}
-        onMarkerClick={setSelectedLetterId}
-      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        <GlobeScene
+          markers={markers}
+          onMarkerClick={setSelectedLetterId}
+        />
+      </motion.div>
     </section>
   );
 }
