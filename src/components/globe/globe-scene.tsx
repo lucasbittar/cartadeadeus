@@ -77,13 +77,13 @@ function LetterPoint({ marker, onClick }: LetterPointProps) {
           document.body.style.cursor = 'default';
         }}
       >
-        <sphereGeometry args={[0.1, 6, 6]} />
+        <sphereGeometry args={[0.1, 8, 8]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
 
       {/* Outer glow */}
       <mesh>
-        <sphereGeometry args={[0.025, 8, 8]} />
+        <sphereGeometry args={[0.025, 16, 16]} />
         <meshBasicMaterial
           color={threeColors.burgundyGlow}
           transparent
@@ -93,13 +93,13 @@ function LetterPoint({ marker, onClick }: LetterPointProps) {
 
       {/* Main point - small 3D burgundy sphere */}
       <mesh>
-        <sphereGeometry args={[0.012, 8, 8]} />
+        <sphereGeometry args={[0.012, 16, 16]} />
         <meshBasicMaterial color={threeColors.burgundy} />
       </mesh>
 
       {/* Inner highlight - creates depth */}
       <mesh position={[0.002, 0.002, 0.004]}>
-        <sphereGeometry args={[0.004, 6, 6]} />
+        <sphereGeometry args={[0.004, 8, 8]} />
         <meshBasicMaterial
           color={0xffffff}
           transparent
@@ -131,7 +131,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
   return (
     <group ref={globeRef}>
       {/* Earth globe with texture */}
-      <Sphere args={[GLOBE_RADIUS, 48, 48]}>
+      <Sphere args={[GLOBE_RADIUS, 64, 64]}>
         <meshStandardMaterial
           map={earthTexture}
           roughness={1}
@@ -141,7 +141,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
       </Sphere>
 
       {/* Subtle atmosphere glow */}
-      <Sphere args={[GLOBE_RADIUS + 0.05, 48, 48]}>
+      <Sphere args={[GLOBE_RADIUS + 0.05, 64, 64]}>
         <shaderMaterial
           transparent
           side={THREE.BackSide}
@@ -256,7 +256,7 @@ export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
       <Canvas
         key={key}
         camera={{ position: [0, 0, 7], fov: 40 }}
-        dpr={[1, 1.5]}
+        dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: 'default' }}
         style={{ background: 'transparent' }}
         onCreated={({ gl }) => {
