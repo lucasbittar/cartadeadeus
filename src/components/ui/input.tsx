@@ -28,6 +28,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             'bg-[#141416] text-foreground placeholder:text-foreground/40',
             'focus:outline-none focus:ring-2 focus:ring-burgundy/30 focus:border-burgundy',
             'transition-all duration-200',
+            'font-jetbrains text-sm leading-relaxed',
             error && 'border-red-500 focus:ring-red-500/30',
             className
           )}

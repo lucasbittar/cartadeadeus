@@ -13,6 +13,13 @@ export const letterInputSchema = z.object({
     .nullable()
     .optional()
     .transform((val) => val?.trim() || null),
+  email: z
+    .string()
+    .max(255, 'Email deve ter no máximo 255 caracteres')
+    .email('Email inválido')
+    .nullable()
+    .optional()
+    .transform((val) => val?.trim() || null),
   is_anonymous: z.boolean(),
   lat: z
     .number()

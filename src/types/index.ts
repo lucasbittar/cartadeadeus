@@ -4,6 +4,7 @@ export interface Letter {
   id: string;
   content: string;
   author?: string | null;
+  email?: string | null;
   is_anonymous?: boolean;
   lat: number;
   lng: number;
@@ -20,6 +21,7 @@ export interface Letter {
 export interface LetterInput {
   content: string;
   author?: string;
+  email?: string;
   is_anonymous: boolean;
   lat: number;
   lng: number;

@@ -33,7 +33,7 @@ export function LetterForm() {
   const {
     form,
     setContent,
-    setAuthor,
+    setEmail,
     setSelectedCity,
     resetForm,
     setSubmittedLetter,
@@ -74,7 +74,7 @@ export function LetterForm() {
 
     mutation.mutate({
       content: form.content.trim(),
-      author: form.author || undefined,
+      email: form.email || undefined,
       is_anonymous: true,
       lat: form.selectedCity.lat,
       lng: form.selectedCity.lng,
@@ -103,10 +103,11 @@ export function LetterForm() {
       />
 
       <Input
-        id="author-name"
-        placeholder="Seu nome"
-        value={form.author}
-        onChange={(e) => setAuthor(e.target.value)}
+        id="email"
+        type="email"
+        placeholder={copy.form.emailPlaceholder}
+        value={form.email}
+        onChange={(e) => setEmail(e.target.value)}
       />
 
       {error && (
@@ -127,6 +128,17 @@ export function LetterForm() {
       >
         {mutation.isPending ? copy.form.submitting : copy.form.submitButton}
       </Button>
+
+      <p className="text-xs text-muted-dark text-center">
+        {copy.form.consent}{' '}
+        <a href="/terms" target="_blank" className="text-burgundy hover:underline underline-offset-2">
+          {copy.form.termsLink}
+        </a>{' '}
+        {copy.form.consentAnd}{' '}
+        <a href="/privacy" target="_blank" className="text-burgundy hover:underline underline-offset-2">
+          {copy.form.privacyLink}
+        </a>.
+      </p>
     </form>
   );
 }

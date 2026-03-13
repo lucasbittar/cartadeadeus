@@ -201,13 +201,19 @@ export function LetterTable({
             </p>
           )}
 
-          {/* Author & City */}
-          <div className="flex items-center gap-2 text-xs text-muted-dark mb-3">
+          {/* Author, Email & City */}
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-dark mb-3">
             <span>
               {letter.author || copy.marquee.anonymous}
             </span>
             <span>&middot;</span>
             <span>{letter.city}</span>
+            {letter.email && (
+              <>
+                <span>&middot;</span>
+                <span>{letter.email}</span>
+              </>
+            )}
           </div>
 
           {/* Actions */}
@@ -265,6 +271,9 @@ export function LetterTable({
                 {copy.admin.letters.table.author}
               </th>
               <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
+                {copy.admin.letters.table.email}
+              </th>
+              <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
                 {copy.admin.letters.table.city}
               </th>
               <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
@@ -312,6 +321,11 @@ export function LetterTable({
                 <td className="p-4">
                   <p className="text-sm text-muted-dark">
                     {letter.author || copy.marquee.anonymous}
+                  </p>
+                </td>
+                <td className="p-4">
+                  <p className="text-sm text-muted-dark">
+                    {letter.email || '—'}
                   </p>
                 </td>
                 <td className="p-4">

@@ -115,6 +115,7 @@ export async function POST(request: NextRequest) {
       .insert({
         content: validatedData.content,
         author: validatedData.author || null,
+        email: validatedData.email || null,
         is_anonymous: true,
         lat: validatedData.lat,
         lng: validatedData.lng,
@@ -145,7 +146,10 @@ export async function POST(request: NextRequest) {
       headers['X-RateLimit-Reset'] = String(rateLimitResult.reset);
     }
 
-    return NextResponse.json(data, {
+    // Strip email from public response
+    const { email: _email, ...publicData } = data;
+
+    return NextResponse.json(publicData, {
       status: 201,
       headers,
     });

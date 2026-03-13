@@ -123,16 +123,15 @@ export default function HomePage() {
 
               {/* Personal dedication */}
               <p className="font-playfair text-white/70 leading-relaxed mb-8">
-                Uma homenagem feita com <span className="text-burgundy">&#10084;</span> por{' '}
+                Criado por{' '}
                 <a
-                  href="https://instagram.com/lucasbittar.music"
+                  href="https://lucasbittar.dev"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white hover:text-burgundy transition-colors duration-300 underline decoration-burgundy/30 underline-offset-4 hover:decoration-burgundy"
                 >
                   Lucas Bittar
-                </a>{' '}
-                para a maior banda do Brasil e seus fãs.
+                </a>
               </p>
 
               {/* Social handles */}
@@ -140,6 +139,23 @@ export default function HomePage() {
                 <span className="hover:text-burgundy/60 transition-colors cursor-default">{copy.social.hashtag}</span>
                 <span className="text-burgundy/40">·</span>
                 <span className="hover:text-burgundy/60 transition-colors cursor-default">{copy.social.fresnoHandle}</span>
+              </div>
+
+              {/* Legal links */}
+              <div className="flex items-center justify-center gap-3 text-white/30 text-xs mb-4">
+                <a
+                  href="/terms"
+                  className="hover:text-white/50 transition-colors"
+                >
+                  Termos de Uso
+                </a>
+                <span className="text-burgundy/40">·</span>
+                <a
+                  href="/privacy"
+                  className="hover:text-white/50 transition-colors"
+                >
+                  Política de Privacidade
+                </a>
               </div>
 
               {/* Copyright */}
