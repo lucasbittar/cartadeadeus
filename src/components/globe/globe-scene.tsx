@@ -247,6 +247,17 @@ export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
     setHasError(true);
   }, []);
 
+  // R3F Canvas sometimes fails to paint its first frame when mounted
+  // off-screen (below the fold). Dispatching a resize event after mount
+  // forces R3F to recalculate size and trigger a render — the same thing
+  // that happens when the user manually resizes the window.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [key]);
+
   if (hasError) {
     return <ErrorFallback onRetry={handleRetry} />;
   }
@@ -259,12 +270,6 @@ export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: 'default' }}
         style={{ background: 'transparent' }}
-        onCreated={({ gl }) => {
-          // Verify WebGL is working
-          if (!gl.capabilities.isWebGL2 && !gl.capabilities) {
-            console.warn('WebGL capabilities limited');
-          }
-        }}
       >
         <WebGLContextHandler onContextLost={handleContextLost} />
         <Suspense fallback={<LoadingState />}>
