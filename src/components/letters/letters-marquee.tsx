@@ -152,7 +152,7 @@ export function LettersMarquee() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {[...topRow, ...bottomRow].slice(0, 6).map((letter, index) => (
-              <LetterCard key={letter.id} letter={letter} isVisible={isInView} />
+              <LetterCard key={letter.id} letter={letter} delay={index * 300} startTyping={isInView} />
             ))}
           </div>
         </div>
@@ -180,17 +180,17 @@ export function LettersMarquee() {
         <p className="text-foreground/60">{copy.marquee.subtitle}</p>
       </motion.div>
 
-      {/* Marquee rows with staggered card entrance */}
+      {/* Marquee rows */}
       <div className="space-y-6">
-        {/* Top row - cards enter left to right, scrolls left */}
+        {/* Top row - scrolls left */}
         {topRow.length > 0 && (
-          <MarqueeRow letters={topRow} direction="left" speed={40} isInView={isInView} entranceFrom="left" />
+          <MarqueeRow letters={topRow} direction="left" speed={70} startTyping={isInView} />
         )}
 
-        {/* Bottom row - cards enter right to left, scrolls right (hidden on mobile) */}
+        {/* Bottom row - scrolls right (hidden on mobile) */}
         {bottomRow.length > 0 && (
           <div className="hidden md:block">
-            <MarqueeRow letters={bottomRow} direction="right" speed={45} isInView={isInView} entranceFrom="right" />
+            <MarqueeRow letters={bottomRow} direction="right" speed={80} startTyping={isInView} />
           </div>
         )}
       </div>
