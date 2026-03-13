@@ -49,7 +49,7 @@ export const LetterCard = React.memo(function LetterCard({ letter, delay = 0, st
 
   return (
     <motion.div
-      className="flex-shrink-0 w-[280px] md:w-[320px] lg:w-[360px] p-6 bg-cream rounded-lg border border-white/[0.06] ring-1 ring-white/5 hover:ring-white/10 transition-all duration-300 hover:scale-[1.02] cursor-default"
+      className="flex-shrink-0 w-[280px] md:w-[320px] lg:w-[360px] p-6 my-2 bg-cream rounded-lg border border-white/[0.06] hover:border-burgundy/50 transition-colors duration-300 cursor-default"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
