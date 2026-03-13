@@ -152,7 +152,7 @@ export function LettersMarquee() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {[...topRow, ...bottomRow].slice(0, 6).map((letter, index) => (
-              <LetterCard key={letter.id} letter={letter} startTyping={isInView} />
+              <LetterCard key={letter.id} letter={letter} isVisible={isInView} />
             ))}
           </div>
         </div>
@@ -180,29 +180,18 @@ export function LettersMarquee() {
         <p className="text-foreground/60">{copy.marquee.subtitle}</p>
       </motion.div>
 
-      {/* Marquee rows with staggered entrance */}
+      {/* Marquee rows with staggered card entrance */}
       <div className="space-y-6">
-        {/* Top row - slides in from left, scrolls left */}
+        {/* Top row - cards enter left to right, scrolls left */}
         {topRow.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, x: -120 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -120 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          >
-            <MarqueeRow letters={topRow} direction="left" speed={40} startTyping={isInView} />
-          </motion.div>
+          <MarqueeRow letters={topRow} direction="left" speed={40} isInView={isInView} entranceFrom="left" />
         )}
 
-        {/* Bottom row - slides in from right, scrolls right (hidden on mobile) */}
+        {/* Bottom row - cards enter right to left, scrolls right (hidden on mobile) */}
         {bottomRow.length > 0 && (
-          <motion.div
-            className="hidden md:block"
-            initial={{ opacity: 0, x: 120 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 120 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-          >
-            <MarqueeRow letters={bottomRow} direction="right" speed={45} startTyping={isInView} />
-          </motion.div>
+          <div className="hidden md:block">
+            <MarqueeRow letters={bottomRow} direction="right" speed={45} isInView={isInView} entranceFrom="right" />
+          </div>
         )}
       </div>
     </section>

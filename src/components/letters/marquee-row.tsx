@@ -8,18 +8,23 @@ interface MarqueeRowProps {
   letters: Letter[];
   direction?: 'left' | 'right';
   speed?: number; // pixels per second
-  startTyping?: boolean;
+  isInView?: boolean;
+  entranceFrom?: 'left' | 'right'; // stagger direction for entrance
 }
+
+const STAGGER_DELAY = 0.07; // seconds between each card
 
 export function MarqueeRow({
   letters,
   direction = 'left',
   speed = 30,
-  startTyping = false,
+  isInView = false,
+  entranceFrom = 'left',
 }: MarqueeRowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [entranceComplete, setEntranceComplete] = useState(false);
   const startXRef = useRef(0);
   const scrollStartRef = useRef(0);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -29,10 +34,22 @@ export function MarqueeRow({
     return [...letters, ...letters];
   }, [letters]);
 
+  // Total entrance animation duration
+  const entranceDuration = (letters.length - 1) * STAGGER_DELAY + 0.5; // last card delay + its own duration
+
+  // Start auto-scroll only after entrance animation finishes
+  useEffect(() => {
+    if (!isInView) return;
+    const timer = setTimeout(() => {
+      setEntranceComplete(true);
+    }, entranceDuration * 1000);
+    return () => clearTimeout(timer);
+  }, [isInView, entranceDuration]);
+
   // Auto-scroll animation
   useEffect(() => {
     const container = scrollRef.current;
-    if (!container || isPaused || letters.length === 0) return;
+    if (!container || isPaused || !entranceComplete || letters.length === 0) return;
 
     let animationId: number;
     let lastTime = performance.now();
@@ -64,7 +81,7 @@ export function MarqueeRow({
     return () => {
       cancelAnimationFrame(animationId);
     };
-  }, [isPaused, direction, speed, letters.length]);
+  }, [isPaused, direction, speed, letters.length, entranceComplete]);
 
   const pauseWithDelay = useCallback(() => {
     if (pauseTimeoutRef.current) {
@@ -137,6 +154,24 @@ export function MarqueeRow({
     };
   }, []);
 
+  // Calculate stagger delay per card
+  const getDelay = (index: number): number => {
+    // Only stagger the first set of letters (not the duplicates)
+    const originalIndex = index % letters.length;
+    const isFirstSet = index < letters.length;
+
+    if (!isFirstSet) {
+      // Duplicate set: animate together with the last card of the first set
+      return (letters.length - 1) * STAGGER_DELAY;
+    }
+
+    if (entranceFrom === 'left') {
+      return originalIndex * STAGGER_DELAY;
+    } else {
+      return (letters.length - 1 - originalIndex) * STAGGER_DELAY;
+    }
+  };
+
   return (
     <div
       ref={scrollRef}
@@ -162,7 +197,8 @@ export function MarqueeRow({
         <LetterCard
           key={`${letter.id}-${index}`}
           letter={letter}
-          startTyping={startTyping}
+          delay={getDelay(index)}
+          isVisible={isInView}
         />
       ))}
     </div>

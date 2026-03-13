@@ -6,16 +6,25 @@ import type { Letter } from '@/types';
 
 interface LetterCardProps {
   letter: Letter;
-  startTyping?: boolean;
+  delay?: number;
+  isVisible?: boolean;
 }
 
-export const LetterCard = React.memo(function LetterCard({ letter, startTyping = false }: LetterCardProps) {
+export const LetterCard = React.memo(function LetterCard({
+  letter,
+  delay = 0,
+  isVisible = false,
+}: LetterCardProps) {
   return (
     <motion.div
       className="flex-shrink-0 w-[280px] md:w-[320px] lg:w-[360px] p-6 bg-cream rounded-lg border border-white/[0.06] ring-1 ring-white/5 hover:ring-white/10 transition-all duration-300 hover:scale-[1.02] cursor-default"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: startTyping ? 1 : 0 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0, y: -20 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+      transition={{
+        duration: 0.5,
+        delay,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
     >
       <div className="relative">
         {/* Opening quote */}
