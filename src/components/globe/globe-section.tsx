@@ -68,17 +68,12 @@ export function GlobeSection() {
         </p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
+      <div>
         <GlobeScene
           markers={markers}
           onMarkerClick={setSelectedLetterId}
         />
-      </motion.div>
+      </div>
     </section>
   );
 }
