@@ -1,57 +1,20 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import type { Letter } from '@/types';
 
 interface LetterCardProps {
   letter: Letter;
-  delay?: number; // delay in ms before typing starts
-  startTyping?: boolean; // whether to start the typewriter effect
+  startTyping?: boolean;
 }
 
-export const LetterCard = React.memo(function LetterCard({ letter, delay = 0, startTyping = false }: LetterCardProps) {
-  const [displayedText, setDisplayedText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const hasStartedRef = useRef(false);
-
-  useEffect(() => {
-    // Only start typing once, when startTyping becomes true
-    if (!startTyping || hasStartedRef.current) return;
-    hasStartedRef.current = true;
-
-    let intervalId: NodeJS.Timeout | null = null;
-
-    // Start typing after the specified delay
-    const delayTimeout = setTimeout(() => {
-      setIsTyping(true);
-      let currentIndex = 0;
-      const text = letter.content;
-
-      intervalId = setInterval(() => {
-        if (currentIndex <= text.length) {
-          setDisplayedText(text.slice(0, currentIndex));
-          currentIndex++;
-        } else {
-          setIsTyping(false);
-          setIsComplete(true);
-          if (intervalId) clearInterval(intervalId);
-        }
-      }, 30);
-    }, delay);
-
-    return () => {
-      clearTimeout(delayTimeout);
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [startTyping, letter.content, delay]);
-
+export const LetterCard = React.memo(function LetterCard({ letter, startTyping = false }: LetterCardProps) {
   return (
     <motion.div
       className="flex-shrink-0 w-[280px] md:w-[320px] lg:w-[360px] p-6 bg-cream rounded-lg border border-white/[0.06] ring-1 ring-white/5 hover:ring-white/10 transition-all duration-300 hover:scale-[1.02] cursor-default"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: startTyping ? 1 : 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="relative">
@@ -63,12 +26,9 @@ export const LetterCard = React.memo(function LetterCard({ letter, delay = 0, st
           &ldquo;
         </span>
 
-        {/* Letter content with typewriter effect */}
+        {/* Letter content */}
         <p className="font-jetbrains text-sm text-foreground/90 leading-relaxed pl-6 pr-2">
-          {isComplete ? letter.content : displayedText}
-          {isTyping && (
-            <span className="inline-block w-0.5 h-4 bg-burgundy ml-0.5 animate-pulse" />
-          )}
+          {letter.content}
         </p>
 
         {/* Closing quote */}

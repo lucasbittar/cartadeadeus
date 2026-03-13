@@ -44,7 +44,7 @@ export default function HomePage() {
       >
         {/* Car image — desktop */}
         <Image
-          src="/car-bg.jpg"
+          src="/car-bg-v2.jpg"
           alt=""
           fill
           priority
@@ -55,7 +55,7 @@ export default function HomePage() {
 
         {/* Car image — mobile (portrait, car at bottom) */}
         <Image
-          src="/car-bg-mobile-v4.jpg"
+          src="/car-bg-mobile-v5.jpg"
           alt=""
           fill
           priority
