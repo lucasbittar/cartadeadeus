@@ -26,6 +26,11 @@ const config: Config = {
           900: '#1C040B',
         },
         cream: '#1A1A1E',
+        muted: {
+          DEFAULT: '#6B6B6B',
+          dark: '#8A8A8A',
+          light: '#2A2A2F',
+        },
       },
       fontFamily: {
         playfair: ['var(--font-playfair)', 'serif'],

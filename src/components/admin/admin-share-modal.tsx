@@ -76,7 +76,7 @@ export function AdminShareModal({ letter, onClose }: AdminShareModalProps) {
         </div>
 
         {/* Letter Preview */}
-        <div className="bg-cream rounded-lg p-4 mb-6">
+        <div className="bg-surface rounded-lg p-4 mb-6">
           <p className="text-sm text-foreground line-clamp-4">{letter.content}</p>
           <p className="mt-2 text-xs text-muted-dark">
             {letter.is_anonymous
@@ -105,7 +105,7 @@ export function AdminShareModal({ letter, onClose }: AdminShareModalProps) {
           <button
             onClick={() => handleDownload('og')}
             disabled={downloading !== null}
-            className="w-full flex items-center justify-center gap-2 border border-muted-light py-3 rounded-lg font-medium hover:bg-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 border border-muted-light py-3 rounded-lg font-medium text-foreground hover:bg-surface transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {downloading === 'og' ? (
               <>
