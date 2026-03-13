@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useLetterStore } from '@/store/letter-store';
 import { copy } from '@/constants/copy';
 import type { LetterMarker } from '@/types';
@@ -35,6 +35,8 @@ async function fetchMarkers(): Promise<LetterMarker[]> {
 
 export function GlobeSection() {
   const setSelectedLetterId = useLetterStore((state) => state.setSelectedLetterId);
+  const globeContainerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(globeContainerRef, { once: true, amount: 0.01 });
 
   const { data: markers = [], isLoading } = useQuery({
     queryKey: ['letters-markers'],
@@ -68,17 +70,16 @@ export function GlobeSection() {
         </p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <GlobeScene
-          markers={markers}
-          onMarkerClick={setSelectedLetterId}
-        />
-      </motion.div>
+      <div ref={globeContainerRef}>
+        {isInView ? (
+          <GlobeScene
+            markers={markers}
+            onMarkerClick={setSelectedLetterId}
+          />
+        ) : (
+          <div className="w-full h-[500px] md:h-[1000px]" />
+        )}
+      </div>
     </section>
   );
 }
