@@ -61,7 +61,7 @@ export function GlobeSection() {
               {copy.globe.loading}
             </span>
           ) : markers.length > 0 ? (
-            `${markers.length} carta${markers.length !== 1 ? 's' : ''} enviada${markers.length !== 1 ? 's' : ''}`
+            `${markers.length.toLocaleString('pt-BR')} carta${markers.length !== 1 ? 's' : ''} enviada${markers.length !== 1 ? 's' : ''}`
           ) : (
             copy.globe.emptyState
           )}
