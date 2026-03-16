@@ -55,11 +55,9 @@ function LetterPoint({ marker, onClick }: LetterPointProps) {
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Gentle floating animation
+      // Gentle floating animation — zero allocations per frame
       const float = Math.sin(state.clock.elapsedTime * 1.5 + marker.lat * 0.05) * 0.003;
-      groupRef.current.position.copy(
-        position.clone().add(normal.clone().multiplyScalar(float))
-      );
+      groupRef.current.position.copy(position).addScaledVector(normal, float);
     }
   });
 
@@ -79,13 +77,13 @@ function LetterPoint({ marker, onClick }: LetterPointProps) {
           document.body.style.cursor = 'default';
         }}
       >
-        <sphereGeometry args={[0.1, 8, 8]} />
+        <sphereGeometry args={[0.1, 6, 6]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
 
       {/* Outer glow */}
       <mesh>
-        <sphereGeometry args={[0.025, 16, 16]} />
+        <sphereGeometry args={[0.025, 8, 8]} />
         <meshBasicMaterial
           color={threeColors.burgundyGlow}
           transparent
@@ -95,13 +93,13 @@ function LetterPoint({ marker, onClick }: LetterPointProps) {
 
       {/* Main point - small 3D burgundy sphere */}
       <mesh>
-        <sphereGeometry args={[0.012, 16, 16]} />
+        <sphereGeometry args={[0.012, 8, 8]} />
         <meshBasicMaterial color={threeColors.burgundy} />
       </mesh>
 
       {/* Inner highlight - creates depth */}
       <mesh position={[0.002, 0.002, 0.004]}>
-        <sphereGeometry args={[0.004, 8, 8]} />
+        <sphereGeometry args={[0.004, 6, 6]} />
         <meshBasicMaterial
           color={0xffffff}
           transparent
@@ -133,7 +131,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
   return (
     <group ref={globeRef}>
       {/* Earth globe with texture */}
-      <Sphere args={[GLOBE_RADIUS, 64, 64]}>
+      <Sphere args={[GLOBE_RADIUS, 48, 48]}>
         <meshStandardMaterial
           map={earthTexture}
           roughness={1}
@@ -143,7 +141,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
       </Sphere>
 
       {/* Subtle atmosphere glow */}
-      <Sphere args={[GLOBE_RADIUS + 0.05, 64, 64]}>
+      <Sphere args={[GLOBE_RADIUS + 0.05, 48, 48]}>
         <shaderMaterial
           transparent
           side={THREE.BackSide}
@@ -249,6 +247,17 @@ export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
     setHasError(true);
   }, []);
 
+  // R3F Canvas sometimes fails to paint its first frame when mounted
+  // off-screen (below the fold). Dispatching a resize event after mount
+  // forces R3F to recalculate size and trigger a render — the same thing
+  // that happens when the user manually resizes the window.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [key]);
+
   if (hasError) {
     return <ErrorFallback onRetry={handleRetry} />;
   }
@@ -258,15 +267,9 @@ export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
       <Canvas
         key={key}
         camera={{ position: [0, 0, 7], fov: 40 }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: 'default' }}
         style={{ background: 'transparent' }}
-        onCreated={({ gl }) => {
-          // Verify WebGL is working
-          if (!gl.capabilities.isWebGL2 && !gl.capabilities) {
-            console.warn('WebGL capabilities limited');
-          }
-        }}
       >
         <WebGLContextHandler onContextLost={handleContextLost} />
         <Suspense fallback={<LoadingState />}>

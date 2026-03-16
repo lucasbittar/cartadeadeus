@@ -5,7 +5,9 @@ export const copy = {
     subtitle: 'Fresno',
   },
   hero: {
-    quote: '"Pra cada vez que eu precisei de palavras e não as pude encontrar, eu fiz uma carta. Todas elas são de adeus."',
+    headline: 'Escreva aqui sua Carta de Adeus.',
+    body: 'Todas elas precisam existir. Todas elas são anônimas, mas precisam existir.',
+    closing: 'Deposite aqui seu adeus para alguém, para algo, para uma versão de você que você não quer mais ser.',
     cta: 'Escreva sua carta',
     albumInfo: 'Fresno • Novo Álbum',
   },
@@ -15,8 +17,13 @@ export const copy = {
     anonymousLabel: 'Enviar anonimamente',
     locationLabel: 'De onde você está escrevendo?',
     locationPlaceholder: 'Buscar cidade...',
+    emailPlaceholder: 'Seu e-mail (opcional)',
     submitButton: 'Enviar carta',
     submitting: 'Enviando...',
+    consent: 'Ao enviar, você concorda com nossos',
+    termsLink: 'Termos de Uso',
+    privacyLink: 'Política de Privacidade',
+    consentAnd: 'e',
   },
   globe: {
     title: 'Cartas pelo mundo',
@@ -108,6 +115,7 @@ export const copy = {
         city: 'Cidade',
         status: 'Status',
         date: 'Data',
+        email: 'Email',
         actions: 'Ações',
       },
       actions: {

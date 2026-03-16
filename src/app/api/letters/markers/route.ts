@@ -8,7 +8,9 @@ export async function GET() {
     const { data, error } = await supabase
       .from('letters')
       .select('id, lat, lng')
-      .eq('status', 'approved');
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(5000);
 
     if (error) {
       console.error('Error fetching letter markers:', error);

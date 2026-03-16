@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     // Only return approved letters with public fields
     const { data, error } = await supabase
       .from('letters')
-      .select('id, content, author, is_anonymous, lat, lng, city, created_at')
+      .select('id, content, lat, lng, city, created_at')
       .eq('status', 'approved')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -114,8 +114,9 @@ export async function POST(request: NextRequest) {
       .from('letters')
       .insert({
         content: validatedData.content,
-        author: validatedData.is_anonymous ? null : validatedData.author,
-        is_anonymous: validatedData.is_anonymous,
+        author: validatedData.author || null,
+        email: validatedData.email || null,
+        is_anonymous: true,
         lat: validatedData.lat,
         lng: validatedData.lng,
         city: validatedData.city,
@@ -145,7 +146,10 @@ export async function POST(request: NextRequest) {
       headers['X-RateLimit-Reset'] = String(rateLimitResult.reset);
     }
 
-    return NextResponse.json(data, {
+    // Strip email from public response
+    const { email: _email, ...publicData } = data;
+
+    return NextResponse.json(publicData, {
       status: 201,
       headers,
     });

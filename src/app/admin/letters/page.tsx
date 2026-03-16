@@ -206,6 +206,26 @@ export default function AdminLettersPage() {
         <h2 className="font-playfair text-2xl font-semibold text-foreground">
           {copy.admin.letters.title}
         </h2>
+        <button
+          onClick={async () => {
+            try {
+              const response = await fetch('/api/admin/letters/export-emails');
+              if (!response.ok) throw new Error('Export failed');
+              const blob = await response.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'emails.csv';
+              a.click();
+              URL.revokeObjectURL(url);
+            } catch (error) {
+              console.error('Error exporting emails:', error);
+            }
+          }}
+          className="px-4 py-2 border border-muted-light rounded-lg text-sm text-muted-dark hover:text-burgundy hover:border-burgundy transition-colors"
+        >
+          Exportar emails
+        </button>
       </div>
 
       {/* Filters and Search */}
@@ -233,7 +253,7 @@ export default function AdminLettersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por conteudo ou autor..."
-          className="w-full md:max-w-xs px-4 py-2 border border-muted-light rounded-lg focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy transition-colors text-sm"
+          className="w-full md:max-w-xs px-4 py-2 bg-surface border border-muted-light rounded-lg text-foreground placeholder:text-muted-dark focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy transition-colors text-sm"
         />
       </div>
 

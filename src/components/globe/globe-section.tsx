@@ -51,7 +51,7 @@ export function GlobeSection() {
         transition={{ duration: 0.8 }}
         className="max-w-4xl mx-auto text-center mb-12"
       >
-        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4 text-shadow-cast">
           {copy.globe.title}
         </h2>
         <p className="text-foreground/60">
@@ -61,24 +61,17 @@ export function GlobeSection() {
               {copy.globe.loading}
             </span>
           ) : markers.length > 0 ? (
-            `${markers.length} carta${markers.length !== 1 ? 's' : ''} enviada${markers.length !== 1 ? 's' : ''}`
+            `${markers.length.toLocaleString('pt-BR')} carta${markers.length !== 1 ? 's' : ''} enviada${markers.length !== 1 ? 's' : ''}`
           ) : (
             copy.globe.emptyState
           )}
         </p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <GlobeScene
-          markers={markers}
-          onMarkerClick={setSelectedLetterId}
-        />
-      </motion.div>
+      <GlobeScene
+        markers={markers}
+        onMarkerClick={setSelectedLetterId}
+      />
     </section>
   );
 }

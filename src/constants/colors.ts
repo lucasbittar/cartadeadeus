@@ -1,6 +1,6 @@
 export const colors = {
-  background: '#FFFFFF',
-  foreground: '#1A1A1A',
+  background: '#0D0D0F',
+  foreground: '#F0ECE8',
   burgundy: {
     DEFAULT: '#8B1538',
     50: '#F9E8EC',
@@ -14,7 +14,7 @@ export const colors = {
     800: '#380816',
     900: '#1C040B',
   },
-  cream: '#FDF8F5',
+  cream: '#1A1A1E',
 } as const;
 
 export const threeColors = {

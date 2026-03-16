@@ -57,7 +57,7 @@ export function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -73,7 +73,7 @@ export function Modal({
               }}
               className={cn(
                 'relative w-full max-w-lg max-h-[85vh] overflow-auto',
-                'bg-white rounded-2xl shadow-2xl',
+                'bg-[#1C1C20] rounded-2xl shadow-2xl',
                 'p-6 md:p-8',
                 'pointer-events-auto',
                 className
@@ -83,7 +83,7 @@ export function Modal({
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-foreground/5 transition-colors z-10"
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/5 transition-colors z-10"
                   aria-label="Fechar"
                 >
                   <svg

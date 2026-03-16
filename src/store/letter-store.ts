@@ -3,8 +3,8 @@ import type { Letter, City } from '@/types';
 
 interface LetterFormState {
   content: string;
-  isAnonymous: boolean;
   author: string;
+  email: string;
   selectedCity: City | null;
 }
 
@@ -12,8 +12,8 @@ interface LetterStore {
   // Form state
   form: LetterFormState;
   setContent: (content: string) => void;
-  setIsAnonymous: (isAnonymous: boolean) => void;
   setAuthor: (author: string) => void;
+  setEmail: (email: string) => void;
   setSelectedCity: (city: City | null) => void;
   resetForm: () => void;
 
@@ -34,8 +34,8 @@ interface LetterStore {
 
 const initialFormState: LetterFormState = {
   content: '',
-  isAnonymous: true,
   author: '',
+  email: '',
   selectedCity: null,
 };
 
@@ -43,10 +43,10 @@ export const useLetterStore = create<LetterStore>((set) => ({
   form: initialFormState,
   setContent: (content) =>
     set((state) => ({ form: { ...state.form, content } })),
-  setIsAnonymous: (isAnonymous) =>
-    set((state) => ({ form: { ...state.form, isAnonymous } })),
   setAuthor: (author) =>
     set((state) => ({ form: { ...state.form, author } })),
+  setEmail: (email) =>
+    set((state) => ({ form: { ...state.form, email } })),
   setSelectedCity: (selectedCity) =>
     set((state) => ({ form: { ...state.form, selectedCity } })),
   resetForm: () => set({ form: initialFormState }),

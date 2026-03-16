@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
         </div>
 
         {status === 'success' ? (
-          <div className="bg-cream rounded-lg p-6 text-center">
+          <div className="bg-surface rounded-lg p-6 text-center">
             <p className="text-foreground font-medium">
               {copy.admin.login.success}
             </p>
@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={copy.admin.login.emailPlaceholder}
-                className="w-full px-4 py-3 border border-muted-light rounded-lg focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy transition-colors"
+                className="w-full px-4 py-3 bg-surface border border-muted-light rounded-lg text-foreground placeholder:text-muted-dark focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy transition-colors"
                 disabled={status === 'loading'}
                 autoComplete="email"
                 autoFocus

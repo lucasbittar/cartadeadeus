@@ -21,7 +21,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from('letters')
-      .select('id, content, author, is_anonymous, lat, lng, city, created_at')
+      .select('id, content, lat, lng, city, created_at')
       .eq('id', id)
       .eq('status', 'approved')
       .single();

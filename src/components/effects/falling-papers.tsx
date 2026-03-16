@@ -18,12 +18,12 @@ interface Paper {
 }
 
 const PAPER_COLORS = [
-  'rgba(208, 213, 211, 0.7)',  // Soft gray-green
-  'rgba(200, 206, 202, 0.6)',  // Muted sage
-  'rgba(215, 220, 218, 0.65)', // Light gray
-  'rgba(195, 202, 200, 0.55)', // Deeper gray-green
-  'rgba(220, 225, 223, 0.5)',  // Almost white
-  'rgba(188, 196, 194, 0.6)',  // Medium gray
+  'rgba(208, 213, 211, 0.4)',  // Soft gray-green
+  'rgba(200, 206, 202, 0.3)',  // Muted sage
+  'rgba(215, 220, 218, 0.35)', // Light gray
+  'rgba(195, 202, 200, 0.3)',  // Deeper gray-green
+  'rgba(220, 225, 223, 0.25)', // Almost white
+  'rgba(188, 196, 194, 0.3)',  // Medium gray
 ];
 
 function createPaper(id: number, viewportWidth: number): Paper {
@@ -37,7 +37,7 @@ function createPaper(id: number, viewportWidth: number): Paper {
     rotateStart: Math.random() * 360,
     rotateEnd: Math.random() * 360 + (Math.random() > 0.5 ? 180 : -180),
     swayAmount: 30 + Math.random() * 60,
-    opacity: 0.4 + Math.random() * 0.4,
+    opacity: 0.15 + Math.random() * 0.2,
     color: PAPER_COLORS[Math.floor(Math.random() * PAPER_COLORS.length)],
   };
 }
@@ -147,7 +147,7 @@ export function FallingPapers({ count = 35 }: { count?: number }) {
 
   if (!mounted || prefersReducedMotion) {
     return (
-      <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
         {Array.from({ length: 12 }).map((_, i) => (
           <div
             key={i}
@@ -169,7 +169,7 @@ export function FallingPapers({ count = 35 }: { count?: number }) {
   }
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
       {papers.map((paper) => (
         <PaperSheet
           key={paper.id}

@@ -42,7 +42,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
             fontSize: '31px',
             letterSpacing: '0.35em',
             textTransform: 'uppercase',
-            color: '#8B1538',
+            color: '#c8b280',
             fontFamily: 'JetBrains Mono, monospace',
             fontWeight: 400,
             margin: 0,
@@ -76,7 +76,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                     fontSize: '234px',
                     fontFamily: 'Playfair Display, serif',
                     fontWeight: 600,
-                    color: '#1A1A1A',
+                    color: '#c8b280',
                     lineHeight: 0.85,
                     letterSpacing: '-0.02em',
                   }}
@@ -88,7 +88,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                     fontSize: '23px',
                     letterSpacing: '0.25em',
                     textTransform: 'uppercase',
-                    color: '#999999',
+                    color: 'rgba(200, 178, 128, 0.5)',
                     fontFamily: 'JetBrains Mono, monospace',
                     marginTop: '21px',
                   }}
@@ -103,7 +103,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                   fontSize: '156px',
                   fontFamily: 'Playfair Display, serif',
                   fontWeight: 300,
-                  color: '#D8758D',
+                  color: 'rgba(200, 178, 128, 0.4)',
                   lineHeight: 0.85,
                   marginBottom: '52px',
                 }}
@@ -118,7 +118,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                     fontSize: '234px',
                     fontFamily: 'Playfair Display, serif',
                     fontWeight: 600,
-                    color: '#1A1A1A',
+                    color: '#c8b280',
                     lineHeight: 0.85,
                     letterSpacing: '-0.02em',
                   }}
@@ -130,7 +130,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                     fontSize: '23px',
                     letterSpacing: '0.25em',
                     textTransform: 'uppercase',
-                    color: '#999999',
+                    color: 'rgba(200, 178, 128, 0.5)',
                     fontFamily: 'JetBrains Mono, monospace',
                     marginTop: '21px',
                   }}
@@ -156,7 +156,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                 fontFamily: 'Playfair Display, serif',
                 fontWeight: 600,
                 marginTop: '-30px',
-                color: '#1A1A1A',
+                color: '#c8b280',
                 lineHeight: 0.8,
                 letterSpacing: '-0.03em',
               }}
@@ -170,7 +170,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                 fontSize: '36px',
                 letterSpacing: '0.4em',
                 textTransform: 'uppercase',
-                color: '#666666',
+                color: 'rgba(200, 178, 128, 0.5)',
                 fontFamily: 'JetBrains Mono, monospace',
                 marginTop: '70px',
               }}
@@ -186,8 +186,8 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                 gap: '52px',
                 marginTop: '73px',
                 padding: '31px 62px',
-                borderTop: '1px solid rgba(139, 21, 56, 0.15)',
-                borderBottom: '1px solid rgba(139, 21, 56, 0.15)',
+                borderTop: '1px solid rgba(200, 178, 128, 0.2)',
+                borderBottom: '1px solid rgba(200, 178, 128, 0.2)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
@@ -196,7 +196,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                     fontSize: '62px',
                     fontFamily: 'Playfair Display, serif',
                     fontWeight: 600,
-                    color: '#1A1A1A',
+                    color: '#c8b280',
                     lineHeight: 1,
                   }}
                 >
@@ -206,7 +206,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                   style={{
                     fontSize: '21px',
                     letterSpacing: '0.15em',
-                    color: '#999999',
+                    color: 'rgba(200, 178, 128, 0.5)',
                     fontFamily: 'JetBrains Mono, monospace',
                   }}
                 >
@@ -217,7 +217,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
               <span
                 style={{
                   fontSize: '42px',
-                  color: '#D8758D',
+                  color: 'rgba(200, 178, 128, 0.4)',
                   fontFamily: 'Playfair Display, serif',
                   fontWeight: 300,
                 }}
@@ -231,7 +231,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                     fontSize: '62px',
                     fontFamily: 'Playfair Display, serif',
                     fontWeight: 600,
-                    color: '#1A1A1A',
+                    color: '#c8b280',
                     lineHeight: 1,
                   }}
                 >
@@ -241,7 +241,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
                   style={{
                     fontSize: '21px',
                     letterSpacing: '0.15em',
-                    color: '#999999',
+                    color: 'rgba(200, 178, 128, 0.5)',
                     fontFamily: 'JetBrains Mono, monospace',
                   }}
                 >
@@ -258,7 +258,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
             fontSize: '44px',
             lineHeight: 1.5,
             textAlign: 'center',
-            color: '#8B1538',
+            color: 'rgba(200, 178, 128, 0.7)',
             fontFamily: 'Playfair Display, serif',
             fontStyle: 'italic',
             fontWeight: 400,
@@ -285,7 +285,7 @@ export function CountdownOverlayStory({ days, hours, minutes }: CountdownOverlay
             fontSize: '26px',
             letterSpacing: '0.3em',
             textTransform: 'uppercase',
-            color: '#AAAAAA',
+            color: 'rgba(200, 178, 128, 0.4)',
             fontFamily: 'JetBrains Mono, monospace',
             fontWeight: 400,
           }}

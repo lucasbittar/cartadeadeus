@@ -36,7 +36,7 @@ export function TextOverlayStory({ letter }: TextOverlayStoryProps) {
             fontSize: '48px',
             lineHeight: 1.6,
             textAlign: 'center',
-            color: '#1A1A1A',
+            color: '#c8b280',
             fontFamily: 'JetBrains Mono, monospace',
             maxWidth: '800px',
           }}
@@ -61,7 +61,7 @@ export function TextOverlayStory({ letter }: TextOverlayStoryProps) {
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            color: '#666666',
+            color: 'rgba(200, 178, 128, 0.6)',
             fontSize: '28px',
           }}
         >
@@ -74,7 +74,7 @@ export function TextOverlayStory({ letter }: TextOverlayStoryProps) {
           >
             <path
               d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-              fill="#8B1538"
+              fill="#c8b280"
             />
           </svg>
           <span style={{ fontFamily: 'JetBrains Mono, monospace' }}>
@@ -82,17 +82,6 @@ export function TextOverlayStory({ letter }: TextOverlayStoryProps) {
           </span>
         </div>
 
-        {/* Author */}
-        <p
-          style={{
-            fontSize: '26px',
-            color: '#999999',
-            fontFamily: 'Playfair Display, serif',
-            fontStyle: 'italic',
-          }}
-        >
-          {letter.is_anonymous ? 'Anônimo' : letter.author || 'Anônimo'}
-        </p>
       </div>
     </div>
   );

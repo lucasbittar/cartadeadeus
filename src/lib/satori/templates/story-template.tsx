@@ -140,16 +140,6 @@ export function StoryTemplate({ letter }: StoryTemplateProps) {
             <span>📍</span>
             <span>{letter.city}</span>
           </div>
-          <p
-            style={{
-              fontSize: '24px',
-              color: '#999999',
-            }}
-          >
-            {letter.is_anonymous
-              ? 'Anônimo'
-              : letter.author || 'Anônimo'}
-          </p>
         </div>
 
         <div

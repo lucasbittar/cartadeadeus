@@ -1,30 +1,15 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { HeroSection } from '@/components/hero/hero-section';
 import { GlobeSection } from '@/components/globe/globe-section';
 import { LetterModal } from '@/components/letter/letter-modal';
 import { LetterPreviewModal } from '@/components/letter/letter-preview';
 import { ShareModal } from '@/components/share/share-modal';
 import { copy } from '@/constants/copy';
-
-const HeroBackground = dynamic(
-  () =>
-    import('@/components/effects/hero-background').then(
-      (mod) => mod.HeroBackground
-    ),
-  { ssr: false }
-);
-
-const FallingPapers = dynamic(
-  () =>
-    import('@/components/effects/falling-papers').then(
-      (mod) => mod.FallingPapers
-    ),
-  { ssr: false }
-);
 
 const LettersMarquee = dynamic(
   () =>
@@ -42,26 +27,66 @@ const CountdownSection = dynamic(
   { ssr: false }
 );
 
-export default function HomePage() {
-  return (
-    <main className="relative min-h-screen overflow-hidden">
-      {/* Cinematic background with parallax */}
-      <div className="fixed inset-0 z-0">
-        <HeroBackground />
-      </div>
+const NOISE_URL = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
 
-      {/* Falling papers effect */}
-      <FallingPapers count={40} />
+export default function HomePage() {
+  const { scrollY } = useScroll();
+
+  // Dim the entire backdrop slightly as user scrolls past the hero
+  const backdropOpacity = useTransform(scrollY, [0, 600, 1200], [1, 0.5, 0.3]);
+
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-[#0D0D0F]">
+      {/* ——— Fixed backdrop: car + vignette + bottom gradient + noise ——— */}
+      <motion.div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{ opacity: backdropOpacity }}
+      >
+        {/* Car image — desktop */}
+        <Image
+          src="/car-bg-v2.jpg"
+          alt=""
+          fill
+          priority
+          quality={90}
+          className="hidden md:block object-cover object-center"
+          sizes="100vw"
+        />
+
+        {/* Car image — mobile (portrait, car at bottom) */}
+        <Image
+          src="/car-bg-mobile-v5.jpg"
+          alt=""
+          fill
+          priority
+          quality={90}
+          className="block md:hidden object-cover object-bottom"
+          sizes="100vw"
+        />
+
+        {/* Vignette */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.35) 100%)',
+          }}
+        />
+
+      </motion.div>
+
+      {/* Fixed noise texture (separate so it doesn't dim) */}
+      <div
+        className="fixed inset-0 z-[1] opacity-[0.025] pointer-events-none mix-blend-soft-light"
+        style={{ backgroundImage: NOISE_URL, backgroundRepeat: 'repeat' }}
+      />
 
       {/* Main content */}
       <div className="relative z-20">
         <HeroSection />
 
         {/* Globe section with matching mint background */}
-        <div
-          className="relative"
-          style={{ backgroundColor: 'transparent' }}
-        >
+        <div id="content" className="relative">
           <GlobeSection />
 
           {/* Letters marquee section */}
@@ -97,17 +122,16 @@ export default function HomePage() {
               </div>
 
               {/* Personal dedication */}
-              <p className="font-playfair text-lg md:text-xl text-white/70 leading-relaxed mb-8">
-                Uma homenagem feita com <span className="text-burgundy">&#10084;</span> por{' '}
+              <p className="font-playfair text-white/70 leading-relaxed mb-8">
+                Criado por{' '}
                 <a
-                  href="https://instagram.com/lucasbittar.music"
+                  href="https://lucasbittar.dev"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white hover:text-burgundy transition-colors duration-300 underline decoration-burgundy/30 underline-offset-4 hover:decoration-burgundy"
                 >
                   Lucas Bittar
-                </a>{' '}
-                para a maior banda do Brasil e seus fãs.
+                </a>
               </p>
 
               {/* Social handles */}
@@ -115,6 +139,23 @@ export default function HomePage() {
                 <span className="hover:text-burgundy/60 transition-colors cursor-default">{copy.social.hashtag}</span>
                 <span className="text-burgundy/40">·</span>
                 <span className="hover:text-burgundy/60 transition-colors cursor-default">{copy.social.fresnoHandle}</span>
+              </div>
+
+              {/* Legal links */}
+              <div className="flex items-center justify-center gap-3 text-white/30 text-xs mb-4">
+                <a
+                  href="/terms"
+                  className="hover:text-white/50 transition-colors"
+                >
+                  Termos de Uso
+                </a>
+                <span className="text-burgundy/40">·</span>
+                <a
+                  href="/privacy"
+                  className="hover:text-white/50 transition-colors"
+                >
+                  Política de Privacidade
+                </a>
               </div>
 
               {/* Copyright */}

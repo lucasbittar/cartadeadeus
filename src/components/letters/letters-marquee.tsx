@@ -88,7 +88,7 @@ export function LettersMarquee() {
       <section ref={sectionRef} className="pb-12 md:py-12 overflow-hidden">
         {/* Header */}
         <div className="max-w-4xl mx-auto text-center mb-12 px-4">
-          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-2 text-shadow-cast">
             {copy.marquee.title}
           </h2>
           <p className="text-foreground/60">{copy.marquee.subtitle}</p>
@@ -99,18 +99,15 @@ export function LettersMarquee() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-[280px] md:w-[320px] bg-background rounded-2xl p-6 animate-pulse"
-              style={{
-                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-              }}
+              className="flex-shrink-0 w-[280px] md:w-[320px] bg-cream rounded-2xl p-6 animate-pulse border border-white/[0.06]"
             >
               <div className="space-y-3">
-                <div className="h-4 bg-muted-light/50 rounded w-full" />
-                <div className="h-4 bg-muted-light/50 rounded w-3/4" />
-                <div className="h-4 bg-muted-light/50 rounded w-1/2" />
+                <div className="h-4 bg-white/5 rounded w-full" />
+                <div className="h-4 bg-white/5 rounded w-3/4" />
+                <div className="h-4 bg-white/5 rounded w-1/2" />
               </div>
-              <div className="mt-6 pt-4 border-t border-muted-light/30">
-                <div className="h-3 bg-muted-light/50 rounded w-24" />
+              <div className="mt-6 pt-4 border-t border-white/[0.06]">
+                <div className="h-3 bg-white/5 rounded w-24" />
               </div>
             </div>
           ))}
@@ -121,9 +118,9 @@ export function LettersMarquee() {
 
   if (letters.length === 0) {
     return (
-      <section ref={sectionRef} className="py-16 md:py-24 px-4" style={{ backgroundColor: '#f0f5f3' }}>
+      <section ref={sectionRef} className="py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-4 text-shadow-cast">
             {copy.marquee.title}
           </h2>
           <p className="text-foreground/60">{copy.marquee.emptyState}</p>
@@ -146,7 +143,7 @@ export function LettersMarquee() {
           transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto text-center mb-12"
         >
-          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-2">
+          <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-2 text-shadow-cast">
             {copy.marquee.title}
           </h2>
           <p className="text-foreground/60">{copy.marquee.subtitle}</p>
@@ -177,7 +174,7 @@ export function LettersMarquee() {
         transition={{ duration: 0.8 }}
         className="max-w-4xl mx-auto text-center mb-12 px-4"
       >
-        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-foreground mb-2">
+        <h2 className="font-playfair text-3xl md:text-4xl font-bold text-white mb-2 text-shadow-cast">
           {copy.marquee.title}
         </h2>
         <p className="text-foreground/60">{copy.marquee.subtitle}</p>

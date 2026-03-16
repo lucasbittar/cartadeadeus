@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    --background: 240 8% 5%;
+    --foreground: 27 25% 93%;
     --burgundy: 345 75% 31%;
   }
 
@@ -18,7 +18,7 @@
   }
 
   ::selection {
-    @apply bg-burgundy/20 text-burgundy;
+    @apply bg-burgundy/30 text-burgundy-200;
   }
 }
 
@@ -28,11 +28,33 @@
   }
 
   .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
+    @apply bg-[#1C1C20]/80 backdrop-blur-md border border-white/5;
   }
 }
 
 @layer utilities {
+  .text-shadow-cast {
+    text-shadow:
+      0.5px 0.5px 0 #000,
+      1.0px 1.0px 0 #000,
+      1.5px 1.5px 0 #000,
+      2.0px 2.0px 0 #000,
+      2.5px 2.5px 0 #000,
+      3.0px 3.0px 0 #000,
+      3.5px 3.5px 0 #000;
+  }
+
+  .drop-shadow-cast {
+    filter:
+      drop-shadow(0.5px 0.5px 0 #000)
+      drop-shadow(0.5px 0.5px 0 #000)
+      drop-shadow(0.5px 0.5px 0 #000)
+      drop-shadow(0.5px 0.5px 0 #000)
+      drop-shadow(0.5px 0.5px 0 #000)
+      drop-shadow(0.5px 0.5px 0 #000)
+      drop-shadow(0.5px 0.5px 0 #000);
+  }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;

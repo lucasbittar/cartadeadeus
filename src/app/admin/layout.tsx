@@ -44,7 +44,7 @@ export default function AdminLayout({
                     className={`px-2 md:px-3 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-colors ${
                       pathname === item.href
                         ? 'bg-foreground text-background'
-                        : 'text-muted-dark hover:text-foreground hover:bg-cream'
+                        : 'text-muted-dark hover:text-foreground hover:bg-surface'
                     }`}
                   >
                     {item.label}

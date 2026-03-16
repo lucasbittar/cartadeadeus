@@ -36,10 +36,10 @@ function RejectConfirmModal({
           Confirmar rejeição
         </h3>
 
-        <div className="bg-cream rounded-lg p-4 mb-4">
+        <div className="bg-surface rounded-lg p-4 mb-4">
           <p className="text-sm text-foreground line-clamp-3">{letter.content}</p>
           <p className="mt-2 text-xs text-muted-dark">
-            {letter.is_anonymous ? copy.marquee.anonymous : letter.author || '-'} · {letter.city}
+            {letter.author || copy.marquee.anonymous} · {letter.city}
           </p>
         </div>
 
@@ -105,9 +105,9 @@ export function LetterTable({
 
   const getStatusBadge = (status: LetterStatus) => {
     const styles = {
-      pending: 'bg-amber-100 text-amber-700',
-      approved: 'bg-emerald-100 text-emerald-700',
-      rejected: 'bg-red-100 text-red-700',
+      pending: 'bg-amber-500/10 text-amber-400',
+      approved: 'bg-emerald-500/10 text-emerald-400',
+      rejected: 'bg-red-500/10 text-red-400',
     };
     const labels = {
       pending: 'Pendente',
@@ -169,7 +169,7 @@ export function LetterTable({
         <div
           key={letter.id}
           className={`bg-background border border-muted-light rounded-lg p-4 ${
-            letter.flagged ? 'border-orange-300 bg-orange-50' : ''
+            letter.flagged ? 'border-orange-500/30 bg-orange-500/5' : ''
           }`}
         >
           {/* Header: checkbox + status + date */}
@@ -195,19 +195,25 @@ export function LetterTable({
 
           {/* Flag reason */}
           {letter.flagged && letter.flag_reason && (
-            <p className="text-xs text-orange-600 mb-2">
+            <p className="text-xs text-orange-400 mb-2">
               <span className="font-medium">{copy.admin.letters.flagReason}:</span>{' '}
               {letter.flag_reason}
             </p>
           )}
 
-          {/* Author & City */}
-          <div className="flex items-center gap-2 text-xs text-muted-dark mb-3">
+          {/* Author, Email & City */}
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-dark mb-3">
             <span>
-              {letter.is_anonymous ? copy.marquee.anonymous : letter.author || '-'}
+              {letter.author || copy.marquee.anonymous}
             </span>
             <span>&middot;</span>
             <span>{letter.city}</span>
+            {letter.email && (
+              <>
+                <span>&middot;</span>
+                <span>{letter.email}</span>
+              </>
+            )}
           </div>
 
           {/* Actions */}
@@ -245,7 +251,7 @@ export function LetterTable({
     <div className="hidden md:block bg-background border border-muted-light rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-cream border-b border-muted-light">
+          <thead className="bg-surface border-b border-muted-light">
             <tr>
               <th className="w-10 p-4">
                 <input
@@ -265,6 +271,9 @@ export function LetterTable({
                 {copy.admin.letters.table.author}
               </th>
               <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
+                {copy.admin.letters.table.email}
+              </th>
+              <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
                 {copy.admin.letters.table.city}
               </th>
               <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
@@ -282,8 +291,8 @@ export function LetterTable({
             {letters.map((letter) => (
               <tr
                 key={letter.id}
-                className={`hover:bg-cream/50 transition-colors ${
-                  letter.flagged ? 'bg-orange-50' : ''
+                className={`hover:bg-surface/50 transition-colors ${
+                  letter.flagged ? 'bg-orange-500/5' : ''
                 }`}
               >
                 <td className="p-4">
@@ -300,7 +309,7 @@ export function LetterTable({
                       {letter.content}
                     </p>
                     {letter.flagged && letter.flag_reason && (
-                      <p className="mt-1 text-xs text-orange-600">
+                      <p className="mt-1 text-xs text-orange-400">
                         <span className="font-medium">
                           {copy.admin.letters.flagReason}:
                         </span>{' '}
@@ -311,9 +320,12 @@ export function LetterTable({
                 </td>
                 <td className="p-4">
                   <p className="text-sm text-muted-dark">
-                    {letter.is_anonymous
-                      ? copy.marquee.anonymous
-                      : letter.author || '-'}
+                    {letter.author || copy.marquee.anonymous}
+                  </p>
+                </td>
+                <td className="p-4">
+                  <p className="text-sm text-muted-dark">
+                    {letter.email || '—'}
                   </p>
                 </td>
                 <td className="p-4">
