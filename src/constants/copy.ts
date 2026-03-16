@@ -46,8 +46,8 @@ export const copy = {
     lucasHandle: '@lucasfresno',
   },
   marquee: {
-    title: 'Cartas ao vento',
-    subtitle: 'Palavras que ecoam pelo mundo',
+    title: 'Palavras que ecoam pelo mundo',
+    subtitle: '',
     emptyState: 'As primeiras cartas estão a caminho...',
     anonymous: 'Anônimo',
     from: 'de',
