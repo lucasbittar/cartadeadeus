@@ -305,7 +305,10 @@ export function LetterTable({
                 </td>
                 <td className="p-4">
                   <div className="max-w-md">
-                    <p className="text-sm text-foreground line-clamp-2">
+                    <p
+                      className="text-sm text-foreground line-clamp-2 cursor-pointer hover:text-foreground/70 transition-colors"
+                      onClick={() => onShare(letter)}
+                    >
                       {letter.content}
                     </p>
                     {letter.flagged && letter.flag_reason && (
