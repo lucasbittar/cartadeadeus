@@ -33,6 +33,15 @@ async function fetchMarkers(): Promise<LetterMarker[]> {
   return response.json();
 }
 
+async function fetchLetterCount(): Promise<number> {
+  const response = await fetch('/api/letters/count');
+  if (!response.ok) {
+    throw new Error('Failed to fetch letter count');
+  }
+  const { count } = await response.json();
+  return count;
+}
+
 export function GlobeSection() {
   const setSelectedLetterId = useLetterStore((state) => state.setSelectedLetterId);
 
@@ -41,6 +50,14 @@ export function GlobeSection() {
     queryFn: fetchMarkers,
     refetchInterval: 60000,
   });
+
+  const { data: letterCount } = useQuery({
+    queryKey: ['letters-count'],
+    queryFn: fetchLetterCount,
+    refetchInterval: 60000,
+  });
+
+  const totalLetters = letterCount ?? markers.length;
 
   return (
     <section className="relative py-16 md:py-16">
@@ -55,13 +72,13 @@ export function GlobeSection() {
           {copy.globe.title}
         </h2>
         <p className="text-foreground/60">
-          {isLoading ? (
+          {isLoading && letterCount === undefined ? (
             <span className="inline-flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border border-foreground/20 border-t-foreground/60 animate-spin" />
               {copy.globe.loading}
             </span>
-          ) : markers.length > 0 ? (
-            `${markers.length.toLocaleString('pt-BR')} carta${markers.length !== 1 ? 's' : ''} enviada${markers.length !== 1 ? 's' : ''}`
+          ) : totalLetters > 0 ? (
+            `${totalLetters.toLocaleString('pt-BR')} carta${totalLetters !== 1 ? 's' : ''} enviada${totalLetters !== 1 ? 's' : ''}`
           ) : (
             copy.globe.emptyState
           )}
