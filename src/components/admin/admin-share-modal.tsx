@@ -77,7 +77,7 @@ export function AdminShareModal({ letter, onClose }: AdminShareModalProps) {
 
         {/* Letter Preview */}
         <div className="bg-surface rounded-lg p-4 mb-6">
-          <p className="text-sm text-foreground line-clamp-4">{letter.content}</p>
+          <p className="text-sm text-foreground">{letter.content}</p>
           <p className="mt-2 text-xs text-muted-dark">
             {letter.is_anonymous
               ? copy.marquee.anonymous
