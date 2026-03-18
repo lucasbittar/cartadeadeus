@@ -7,7 +7,7 @@ import { copy } from '@/constants/copy';
 import { LetterTable } from '@/components/admin/letter-table';
 import { AdminShareModal } from '@/components/admin/admin-share-modal';
 
-type FilterType = 'all' | 'pending' | 'flagged' | 'approved' | 'rejected';
+type FilterType = 'all' | 'pending' | 'flagged' | 'approved' | 'rejected' | 'favorited';
 
 // Bulk rejection confirmation modal
 function BulkRejectConfirmModal({
@@ -81,6 +81,8 @@ export default function AdminLettersPage() {
       if (filter !== 'all') {
         if (filter === 'flagged') {
           params.set('flagged', 'true');
+        } else if (filter === 'favorited') {
+          params.set('favorited', 'true');
         } else {
           params.set('status', filter);
         }
@@ -166,6 +168,26 @@ export default function AdminLettersPage() {
     }
   };
 
+  const handleToggleFavorite = async (id: string, favorited: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/letters/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ favorited }),
+      });
+
+      if (response.ok) {
+        setLetters((prev) =>
+          prev.map((letter) =>
+            letter.id === id ? { ...letter, favorited } : letter
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
   const handleSelect = (id: string, selected: boolean) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -198,6 +220,7 @@ export default function AdminLettersPage() {
     { key: 'flagged', label: copy.admin.letters.filters.flagged },
     { key: 'approved', label: copy.admin.letters.filters.approved },
     { key: 'rejected', label: copy.admin.letters.filters.rejected },
+    { key: 'favorited', label: copy.admin.letters.filters.favorited },
   ];
 
   return (
@@ -287,6 +310,7 @@ export default function AdminLettersPage() {
         onSelectAll={handleSelectAll}
         onStatusChange={handleStatusChange}
         onShare={setShareModalLetter}
+        onToggleFavorite={handleToggleFavorite}
       />
 
       {/* Load More */}

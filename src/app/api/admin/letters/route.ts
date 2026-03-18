@@ -52,6 +52,11 @@ export async function GET(request: NextRequest) {
       query = query.eq('flagged', true);
     }
 
+    const favorited = searchParams.get('favorited');
+    if (favorited === 'true') {
+      query = query.eq('favorited', true);
+    }
+
     if (search) {
       query = query.or(`content.ilike.%${search}%,author.ilike.%${search}%`);
     }

@@ -31,11 +31,15 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { status } = body;
+    const { status, favorited } = body;
 
-    if (!status || !['pending', 'approved', 'rejected'].includes(status)) {
+    // Must have at least one valid field to update
+    const hasStatus = status && ['pending', 'approved', 'rejected'].includes(status);
+    const hasFavorited = typeof favorited === 'boolean';
+
+    if (!hasStatus && !hasFavorited) {
       return NextResponse.json(
-        { error: 'Invalid status' },
+        { error: 'Invalid update fields' },
         { status: 400 }
       );
     }
@@ -48,13 +52,19 @@ export async function PATCH(
     // Use admin client to bypass RLS for the update
     const adminSupabase = createAdminSupabaseClient();
 
+    const updateData: Record<string, unknown> = {};
+    if (hasStatus) {
+      updateData.status = status;
+      updateData.moderated_at = new Date().toISOString();
+      updateData.moderated_by = user?.email || null;
+    }
+    if (hasFavorited) {
+      updateData.favorited = favorited;
+    }
+
     const { data, error } = await adminSupabase
       .from('letters')
-      .update({
-        status,
-        moderated_at: new Date().toISOString(),
-        moderated_by: user?.email || null,
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
