@@ -108,6 +108,7 @@ export const copy = {
         flagged: 'Sinalizadas',
         approved: 'Aprovadas',
         rejected: 'Rejeitadas',
+        favorited: 'Favoritas',
       },
       table: {
         content: 'Conteúdo',

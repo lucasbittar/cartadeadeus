@@ -12,6 +12,25 @@ interface LetterTableProps {
   onSelectAll: (selected: boolean) => void;
   onStatusChange: (id: string, status: LetterStatus) => void;
   onShare: (letter: Letter) => void;
+  onToggleFavorite: (id: string, favorited: boolean) => void;
+}
+
+function StarIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
 }
 
 // Confirmation modal for rejecting letters
@@ -74,6 +93,7 @@ export function LetterTable({
   onSelectAll,
   onStatusChange,
   onShare,
+  onToggleFavorite,
 }: LetterTableProps) {
   const [letterToReject, setLetterToReject] = useState<Letter | null>(null);
 
@@ -172,7 +192,7 @@ export function LetterTable({
             letter.flagged ? 'border-orange-500/30 bg-orange-500/5' : ''
           }`}
         >
-          {/* Header: checkbox + status + date */}
+          {/* Header: checkbox + status + favorite + date */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <input
@@ -182,6 +202,16 @@ export function LetterTable({
                 className="rounded border-muted-light"
               />
               {getStatusBadge(letter.status)}
+              <button
+                onClick={() => onToggleFavorite(letter.id, !letter.favorited)}
+                className={`transition-colors ${
+                  letter.favorited
+                    ? 'text-amber-400 hover:text-amber-500'
+                    : 'text-muted-light hover:text-amber-400'
+                }`}
+              >
+                <StarIcon filled={letter.favorited} />
+              </button>
             </div>
             <p className="text-xs text-muted-dark">
               {formatDate(letter.created_at)}
@@ -189,7 +219,10 @@ export function LetterTable({
           </div>
 
           {/* Content */}
-          <p className="text-sm text-foreground mb-2">
+          <p
+            className="text-sm text-foreground mb-2 cursor-pointer hover:text-foreground/70 transition-colors"
+            onClick={() => onShare(letter)}
+          >
             {letter.content}
           </p>
 
@@ -234,12 +267,6 @@ export function LetterTable({
                 {copy.admin.letters.actions.reject}
               </button>
             )}
-            <button
-              onClick={() => onShare(letter)}
-              className="text-sm text-muted-dark hover:text-foreground font-medium ml-auto"
-            >
-              {copy.admin.letters.actions.share}
-            </button>
           </div>
         </div>
       ))}
@@ -264,6 +291,7 @@ export function LetterTable({
                   className="rounded border-muted-light"
                 />
               </th>
+              <th className="w-10 p-4" />
               <th className="text-left p-4 text-xs font-medium text-muted-dark uppercase tracking-wider">
                 {copy.admin.letters.table.content}
               </th>
@@ -302,6 +330,18 @@ export function LetterTable({
                     onChange={(e) => onSelect(letter.id, e.target.checked)}
                     className="rounded border-muted-light"
                   />
+                </td>
+                <td className="p-4">
+                  <button
+                    onClick={() => onToggleFavorite(letter.id, !letter.favorited)}
+                    className={`transition-colors ${
+                      letter.favorited
+                        ? 'text-amber-400 hover:text-amber-500'
+                        : 'text-muted-light hover:text-amber-400'
+                    }`}
+                  >
+                    <StarIcon filled={letter.favorited} />
+                  </button>
                 </td>
                 <td className="p-4">
                   <div className="max-w-md">
@@ -358,12 +398,6 @@ export function LetterTable({
                         {copy.admin.letters.actions.reject}
                       </button>
                     )}
-                    <button
-                      onClick={() => onShare(letter)}
-                      className="text-xs text-muted-dark hover:text-foreground font-medium"
-                    >
-                      {copy.admin.letters.actions.share}
-                    </button>
                   </div>
                 </td>
               </tr>

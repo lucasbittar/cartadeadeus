@@ -16,6 +16,7 @@ export interface Letter {
   flag_reason: string | null;
   moderated_at: string | null;
   moderated_by: string | null;
+  favorited: boolean;
 }
 
 export interface LetterInput {
