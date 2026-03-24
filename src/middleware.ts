@@ -42,6 +42,7 @@ const cspDirectives = [
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  "media-src 'self' blob:",
   "object-src 'none'",
   "worker-src 'self' blob:",
 ];
