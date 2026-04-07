@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { checkRateLimit, isRateLimitEnabled } from '@/lib/rate-limit';
 import { letterInputSchema, formatZodError } from '@/lib/validation';
 import { moderateContent, checkForFlagging } from '@/lib/moderation';
+import { roundCoordinate } from '@/lib/utils';
 
 // Body size limit enforced via Zod validation (content max 280 chars, city max 255)
 // For platform-level limits, configure in vercel.json or next.config.js
@@ -117,8 +118,8 @@ export async function POST(request: NextRequest) {
         author: validatedData.author || null,
         email: validatedData.email || null,
         is_anonymous: true,
-        lat: validatedData.lat,
-        lng: validatedData.lng,
+        lat: roundCoordinate(validatedData.lat),
+        lng: roundCoordinate(validatedData.lng),
         city: validatedData.city,
         status,
         flagged: flagging.shouldFlag,

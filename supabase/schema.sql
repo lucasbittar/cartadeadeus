@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS letters (
   content TEXT NOT NULL CHECK (char_length(content) <= 280),
   author VARCHAR(100),
   is_anonymous BOOLEAN DEFAULT true,
-  lat DECIMAL(10, 8) NOT NULL,
-  lng DECIMAL(11, 8) NOT NULL,
+  lat DECIMAL(5, 2) NOT NULL,
+  lng DECIMAL(6, 2) NOT NULL,
   city VARCHAR(255) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

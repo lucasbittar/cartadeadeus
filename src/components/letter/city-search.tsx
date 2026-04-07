@@ -101,7 +101,7 @@ export function CitySearch({ value, onChange, className }: CitySearchProps) {
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
+          enableHighAccuracy: false,
           timeout: 10000,
           maximumAge: 300000,
         });

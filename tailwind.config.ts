@@ -66,6 +66,10 @@ const config: Config = {
           '0%': { transform: 'translateX(-33.333%)' },
           '100%': { transform: 'translateX(0)' },
         },
+        equalizer: {
+          '0%, 100%': { height: '3px' },
+          '50%': { height: '12px' },
+        },
       },
     },
   },

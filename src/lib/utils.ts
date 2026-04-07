@@ -5,6 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const COORDINATE_PRECISION = 2; // ~1.1km — privacy-safe, city-level
+
+export function roundCoordinate(value: number, decimals: number = COORDINATE_PRECISION): number {
+  const factor = Math.pow(10, decimals);
+  return Math.round(value * factor) / factor;
+}
+
 export function latLngToVector3(lat: number, lng: number, radius: number = 1) {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);

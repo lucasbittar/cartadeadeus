@@ -7,6 +7,7 @@ import {
   type GeocodeResult,
 } from '@/lib/geocode-cache';
 import { checkRateLimit, citiesRateLimiter } from '@/lib/rate-limit';
+import { roundCoordinate } from '@/lib/utils';
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -144,8 +145,8 @@ async function handleCitySearch(query: string) {
         name: cityName,
         country: countryName,
         fullName,
-        lat: result.geometry.location.lat,
-        lng: result.geometry.location.lng,
+        lat: roundCoordinate(result.geometry.location.lat),
+        lng: roundCoordinate(result.geometry.location.lng),
       };
     });
 
@@ -192,8 +193,8 @@ async function handleReverseGeocode(lat: number, lng: number) {
       const fallback: GeocodeResult = {
         name: 'Local desconhecido',
         country: '',
-        lat,
-        lng,
+        lat: roundCoordinate(lat),
+        lng: roundCoordinate(lng),
         fullName: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
       };
       return NextResponse.json(fallback);
@@ -221,8 +222,8 @@ async function handleReverseGeocode(lat: number, lng: number) {
     const geocodeResult: GeocodeResult = {
       name: cityName,
       country: countryName,
-      lat,
-      lng,
+      lat: roundCoordinate(lat),
+      lng: roundCoordinate(lng),
       fullName,
     };
 
@@ -239,8 +240,8 @@ async function handleReverseGeocode(lat: number, lng: number) {
     const fallback: GeocodeResult = {
       name: 'Local desconhecido',
       country: '',
-      lat,
-      lng,
+      lat: roundCoordinate(lat),
+      lng: roundCoordinate(lng),
       fullName: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
     };
     return NextResponse.json(fallback);
