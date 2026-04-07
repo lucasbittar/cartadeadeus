@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { roundCoordinate } from '@/lib/utils';
 
 // Letter input validation schema
 export const letterInputSchema = z.object({
@@ -24,11 +25,13 @@ export const letterInputSchema = z.object({
   lat: z
     .number()
     .min(-90, 'Latitude inválida')
-    .max(90, 'Latitude inválida'),
+    .max(90, 'Latitude inválida')
+    .transform((v) => roundCoordinate(v)),
   lng: z
     .number()
     .min(-180, 'Longitude inválida')
-    .max(180, 'Longitude inválida'),
+    .max(180, 'Longitude inválida')
+    .transform((v) => roundCoordinate(v)),
   city: z
     .string()
     .min(1, 'Cidade é obrigatória')
