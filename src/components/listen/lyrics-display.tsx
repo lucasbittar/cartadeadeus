@@ -22,13 +22,14 @@ function getActiveLyricIndex(lyrics: LyricLine[], currentTime: number): number {
   return active;
 }
 
+// Optimized: blur only ±1, scale ±2-3, opacity-only beyond
 function getLineVisuals(distance: number) {
   const abs = Math.abs(distance);
-  if (abs === 0) return { opacity: 1, blur: 0, scale: 1, y: 0 };
-  if (abs === 1) return { opacity: 0.35, blur: 0.5, scale: 0.96, y: distance * 2 };
-  if (abs === 2) return { opacity: 0.18, blur: 1.5, scale: 0.93, y: distance * 3 };
-  if (abs === 3) return { opacity: 0.1, blur: 2.5, scale: 0.9, y: distance * 4 };
-  return { opacity: 0.04, blur: 4, scale: 0.88, y: distance * 5 };
+  if (abs === 0) return { opacity: 1, scale: 1, blur: 0, useTransform: true };
+  if (abs === 1) return { opacity: 0.35, scale: 0.96, blur: 0.8, useTransform: true };
+  if (abs === 2) return { opacity: 0.18, scale: 0.93, blur: 0, useTransform: true };
+  if (abs === 3) return { opacity: 0.1, scale: 0.9, blur: 0, useTransform: true };
+  return { opacity: 0.04, scale: 1, blur: 0, useTransform: false };
 }
 
 export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDisplayProps) {
@@ -61,7 +62,6 @@ export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDispl
       }, 2000);
     };
 
-    // Only count wheel/touch as user scroll, not programmatic
     container.addEventListener('wheel', onScroll, { passive: true });
     container.addEventListener('touchmove', onScroll, { passive: true });
 
@@ -72,7 +72,7 @@ export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDispl
     };
   }, [isSynced]);
 
-  // Auto-scroll: use scrollIntoView for reliable centering
+  // Auto-scroll active line to center
   useEffect(() => {
     if (!isSynced || activeIndex < 0 || isUserScrolling.current) return;
 
@@ -127,7 +127,7 @@ export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDispl
         msOverflowStyle: 'none',
       }}
     >
-      {/* Top breathing room — centers first line */}
+      {/* Top breathing room */}
       <div className="h-[50vh]" aria-hidden />
 
       <div className="flex flex-col items-center gap-6 md:gap-8">
@@ -140,7 +140,23 @@ export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDispl
           }
 
           const isActive = index === activeIndex;
-          const { opacity, blur, scale, y } = getLineVisuals(distance);
+          const abs = Math.abs(distance);
+          const { opacity, scale, blur, useTransform } = getLineVisuals(distance);
+
+          // Distant lines: no animation, no GPU layers — just static opacity
+          if (!useTransform) {
+            return (
+              <button
+                key={index}
+                ref={(el) => setLineRef(index, el)}
+                onClick={() => onSeekToLine?.(line.time)}
+                className="block w-full text-center font-playfair italic leading-[1.45] text-foreground text-lg md:text-[22px] lg:text-[26px] focus:outline-none"
+                style={{ opacity }}
+              >
+                {line.text}
+              </button>
+            );
+          }
 
           return (
             <motion.button
@@ -158,14 +174,16 @@ export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDispl
               animate={{
                 opacity,
                 scale,
-                y,
-                filter: `blur(${blur}px)`,
+                ...(blur > 0 ? { filter: `blur(${blur}px)` } : { filter: 'blur(0px)' }),
               }}
               transition={{
                 type: 'spring',
                 stiffness: 100,
                 damping: 18,
                 mass: 0.7,
+              }}
+              style={{
+                willChange: abs <= 1 ? 'transform, opacity, filter' : 'auto',
               }}
             >
               {/* Burgundy radiance behind active line */}
@@ -183,7 +201,7 @@ export function LyricsDisplay({ lyrics, currentTime, onSeekToLine }: LyricsDispl
         })}
       </div>
 
-      {/* Bottom breathing room — centers last line */}
+      {/* Bottom breathing room */}
       <div className="h-[50vh]" aria-hidden />
     </div>
   );
