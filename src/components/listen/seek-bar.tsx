@@ -47,7 +47,7 @@ export function SeekBar({ currentTime, duration, onSeek }: SeekBarProps) {
       >
         <div className="w-full h-1 group-hover:h-1.5 group-active:h-1.5 bg-foreground/10 rounded-full transition-all overflow-hidden">
           <div
-            className="h-full bg-burgundy rounded-full transition-[width] duration-100"
+            className="h-full bg-burgundy rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
