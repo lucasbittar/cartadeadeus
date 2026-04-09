@@ -26,8 +26,3 @@ export interface Album {
   tracks: Track[];
 }
 
-export interface ListenSession {
-  email: string;
-  expiresAt: number; // unix timestamp
-  signature: string;
-}

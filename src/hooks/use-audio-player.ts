@@ -23,17 +23,19 @@ interface AudioPlayerActions {
 interface UseAudioPlayerOptions {
   onTrackEnd: () => void;
   onTimeUpdate?: (time: number) => void;
+  onDurationChange?: (trackId: string, duration: number) => void;
   repeatMode: RepeatMode;
 }
 
 const VOLUME_KEY = 'listen_volume';
 
 export function useAudioPlayer(options: UseAudioPlayerOptions): AudioPlayerState & AudioPlayerActions {
-  const { onTrackEnd, onTimeUpdate, repeatMode } = options;
+  const { onTrackEnd, onTimeUpdate, onDurationChange, repeatMode } = options;
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const rafRef = useRef<number>(0);
   const currentTrackRef = useRef<Track | null>(null);
   const repeatModeRef = useRef(repeatMode);
+  const statusRef = useRef<PlayerStatus>('idle');
 
   const [status, setStatus] = useState<PlayerStatus>('idle');
   const [currentTime, setCurrentTime] = useState(0);
@@ -45,10 +47,14 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): AudioPlayerState
   });
   const [isMuted, setIsMuted] = useState(false);
 
-  // Keep repeatMode ref in sync
+  // Keep refs in sync
   useEffect(() => {
     repeatModeRef.current = repeatMode;
   }, [repeatMode]);
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   // Initialize audio element once
   useEffect(() => {
@@ -59,6 +65,9 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): AudioPlayerState
 
     const handleLoadedMetadata = () => {
       setDuration(audio.duration);
+      if (currentTrackRef.current && audio.duration > 0) {
+        onDurationChange?.(currentTrackRef.current.id, audio.duration);
+      }
     };
 
     const handleEnded = () => {
@@ -78,7 +87,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): AudioPlayerState
     };
 
     const handleCanPlay = () => {
-      if (status === 'loading') {
+      if (statusRef.current === 'loading') {
         setStatus('playing');
         audio.play().catch(() => setStatus('paused'));
       }

@@ -47,7 +47,7 @@ export function NowPlaying({ track, album }: NowPlayingProps) {
           </h2>
           <p className="text-foreground/50 text-sm mt-1">{track.artist}</p>
           <p className="font-jetbrains text-foreground/30 text-xs mt-2">
-            {String(track.number).padStart(2, '0')} / {String(12).padStart(2, '0')}
+            {String(track.number).padStart(2, '0')} / {String(album.tracks.length).padStart(2, '0')}
           </p>
         </motion.div>
       </AnimatePresence>
