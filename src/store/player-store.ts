@@ -2,12 +2,6 @@ import { create } from 'zustand';
 import type { Track, Album, RepeatMode, MobileView } from '@/types/listen';
 
 interface PlayerStore {
-  // Auth state
-  isVerified: boolean;
-  userEmail: string | null;
-  setVerified: (email: string) => void;
-  clearSession: () => void;
-
   // Album & tracks
   album: Album | null;
   setAlbum: (album: Album) => void;
@@ -27,6 +21,9 @@ interface PlayerStore {
   repeatMode: RepeatMode;
   cycleRepeatMode: () => void;
 
+  // Track durations (discovered at runtime)
+  setTrackDuration: (trackId: string, duration: number) => void;
+
   // UI state
   mobileView: MobileView;
   setMobileView: (view: MobileView) => void;
@@ -35,12 +32,6 @@ interface PlayerStore {
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  // Auth
-  isVerified: false,
-  userEmail: null,
-  setVerified: (email) => set({ isVerified: true, userEmail: email }),
-  clearSession: () => set({ isVerified: false, userEmail: null }),
-
   // Album
   album: null,
   setAlbum: (album) => set({
@@ -92,6 +83,16 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const modes: RepeatMode[] = ['off', 'all', 'one'];
     const current = modes.indexOf(get().repeatMode);
     set({ repeatMode: modes[(current + 1) % modes.length] });
+  },
+
+  // Track durations
+  setTrackDuration: (trackId, duration) => {
+    const { album } = get();
+    if (!album) return;
+    const tracks = album.tracks.map((t) =>
+      t.id === trackId && t.duration === 0 ? { ...t, duration } : t
+    );
+    set({ album: { ...album, tracks } });
   },
 
   // UI
