@@ -25,6 +25,34 @@ const GlobeScene = dynamic(
   }
 );
 
+// Error boundary to catch WebGL creation failures
+class GlobeErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-[500px] md:h-[1000px] flex items-center justify-center">
+          <p className="text-foreground/30 text-sm font-jetbrains">
+            {copy.globe.emptyState}
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 async function fetchMarkers(): Promise<LetterMarker[]> {
   const response = await fetch('/api/letters/markers');
   if (!response.ok) {
@@ -85,10 +113,12 @@ export function GlobeSection() {
         </p>
       </motion.div>
 
-      <GlobeScene
-        markers={markers}
-        onMarkerClick={setSelectedLetterId}
-      />
+      <GlobeErrorBoundary>
+        <GlobeScene
+          markers={markers}
+          onMarkerClick={setSelectedLetterId}
+        />
+      </GlobeErrorBoundary>
     </section>
   );
 }
