@@ -70,11 +70,6 @@ const config: Config = {
           '0%, 100%': { height: '3px' },
           '50%': { height: '12px' },
         },
-        backdropFade: {
-          '0%': { opacity: '1' },
-          '50%': { opacity: '0.5' },
-          '100%': { opacity: '0.3' },
-        },
       },
     },
   },

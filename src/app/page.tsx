@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { HeroSection } from '@/components/hero/hero-section';
 import { GlobeSection } from '@/components/globe/globe-section';
@@ -30,17 +31,25 @@ const CountdownSection = dynamic(
 const NOISE_URL = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
 
 export default function HomePage() {
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!backdropRef.current) return;
+      const y = window.scrollY;
+      const opacity = y < 600 ? 1 - (y / 600) * 0.5 : 0.5 - ((y - 600) / 600) * 0.2;
+      backdropRef.current.style.opacity = String(Math.max(0.3, Math.min(1, opacity)));
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#0D0D0F]">
       {/* ——— Fixed backdrop: car + vignette + bottom gradient + noise ——— */}
       <div
+        ref={backdropRef}
         className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          animation: 'backdropFade 1s ease-out forwards',
-          animationTimeline: 'scroll()',
-          animationRange: '0px 1200px',
-          opacity: 1,
-        } as React.CSSProperties}
       >
         {/* Car image — desktop */}
         <Image
