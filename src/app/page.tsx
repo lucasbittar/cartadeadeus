@@ -34,7 +34,13 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-[#0D0D0F]">
       {/* ——— Fixed backdrop: car + vignette + bottom gradient + noise ——— */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none opacity-30"
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          animation: 'backdropFade 1s ease-out forwards',
+          animationTimeline: 'scroll()',
+          animationRange: '0px 1200px',
+          opacity: 1,
+        } as React.CSSProperties}
       >
         {/* Car image — desktop */}
         <Image
