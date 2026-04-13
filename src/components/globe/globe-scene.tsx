@@ -10,22 +10,27 @@ import type { LetterMarker } from '@/types';
 
 const GLOBE_RADIUS = 2;
 
+// Local Earth texture for reliable loading
 const EARTH_TEXTURE_URL = '/earth-texture-light.jpg';
 
+// Preload texture
 if (typeof window !== 'undefined') {
   useTexture.preload(EARTH_TEXTURE_URL);
 }
 
-// Detect WebGL context loss
+// Component to detect WebGL context loss
 function WebGLContextHandler({ onContextLost }: { onContextLost: () => void }) {
   const { gl } = useThree();
 
   useEffect(() => {
     const canvas = gl.domElement;
+
     const handleContextLost = (event: Event) => {
       event.preventDefault();
+      console.warn('WebGL context lost');
       onContextLost();
     };
+
     canvas.addEventListener('webglcontextlost', handleContextLost);
     return () => canvas.removeEventListener('webglcontextlost', handleContextLost);
   }, [gl, onContextLost]);
@@ -33,90 +38,75 @@ function WebGLContextHandler({ onContextLost }: { onContextLost: () => void }) {
   return null;
 }
 
-// All letter markers as a single instanced mesh — one draw call
-function LetterPoints({ markers, onClick }: { markers: LetterMarker[]; onClick: (id: string) => void }) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const glowRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
+interface LetterPointProps {
+  marker: LetterMarker;
+  onClick: (id: string) => void;
+}
 
-  // Precompute positions
-  const positions = useMemo(() => {
-    return markers.map((m) => {
-      const pos = latLngToVector3(m.lat, m.lng, GLOBE_RADIUS + 0.02);
-      return new THREE.Vector3(pos.x, pos.y, pos.z);
-    });
-  }, [markers]);
+function LetterPoint({ marker, onClick }: LetterPointProps) {
+  const groupRef = useRef<THREE.Group>(null);
+  const position = useMemo(() => {
+    const pos = latLngToVector3(marker.lat, marker.lng, GLOBE_RADIUS + 0.02);
+    return new THREE.Vector3(pos.x, pos.y, pos.z);
+  }, [marker.lat, marker.lng]);
 
-  // Set instance matrices once
-  useEffect(() => {
-    if (!meshRef.current || !glowRef.current) return;
-    positions.forEach((pos, i) => {
-      dummy.position.copy(pos);
-      dummy.updateMatrix();
-      meshRef.current!.setMatrixAt(i, dummy.matrix);
-      glowRef.current!.setMatrixAt(i, dummy.matrix);
-    });
-    meshRef.current.instanceMatrix.needsUpdate = true;
-    glowRef.current.instanceMatrix.needsUpdate = true;
-  }, [positions, dummy]);
+  // Calculate normal vector pointing outward from globe center
+  const normal = useMemo(() => position.clone().normalize(), [position]);
 
-  // Click detection via raycasting on invisible hit spheres
-  const handleClick = useCallback((e: { stopPropagation: () => void; instanceId?: number }) => {
-    e.stopPropagation();
-    if (e.instanceId !== undefined && markers[e.instanceId]) {
-      onClick(markers[e.instanceId].id);
+  useFrame((state) => {
+    if (groupRef.current) {
+      // Gentle floating animation — zero allocations per frame
+      const float = Math.sin(state.clock.elapsedTime * 1.5 + marker.lat * 0.05) * 0.003;
+      groupRef.current.position.copy(position).addScaledVector(normal, float);
     }
-  }, [markers, onClick]);
-
-  const handlePointerOver = useCallback((e: { stopPropagation: () => void }) => {
-    e.stopPropagation();
-    document.body.style.cursor = 'pointer';
-  }, []);
-
-  const handlePointerOut = useCallback(() => {
-    document.body.style.cursor = 'default';
-  }, []);
-
-  if (markers.length === 0) return null;
+  });
 
   return (
-    <>
-      {/* Hit areas — invisible, for click/hover detection */}
-      <instancedMesh
-        args={[undefined, undefined, markers.length]}
-        onClick={handleClick}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-        ref={(mesh) => {
-          if (!mesh) return;
-          positions.forEach((pos, i) => {
-            dummy.position.copy(pos);
-            dummy.updateMatrix();
-            mesh.setMatrixAt(i, dummy.matrix);
-          });
-          mesh.instanceMatrix.needsUpdate = true;
+    <group ref={groupRef} position={position}>
+      {/* Large invisible hit area for easy clicking */}
+      <mesh
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick(marker.id);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = 'pointer';
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = 'default';
         }}
       >
-        <sphereGeometry args={[0.1, 4, 4]} />
+        <sphereGeometry args={[0.1, 6, 6]} />
         <meshBasicMaterial transparent opacity={0} />
-      </instancedMesh>
+      </mesh>
 
-      {/* Outer glow — single instanced draw call */}
-      <instancedMesh ref={glowRef} args={[undefined, undefined, markers.length]}>
-        <sphereGeometry args={[0.025, 6, 6]} />
+      {/* Outer glow */}
+      <mesh>
+        <sphereGeometry args={[0.025, 8, 8]} />
         <meshBasicMaterial
           color={threeColors.burgundyGlow}
           transparent
           opacity={0.15}
         />
-      </instancedMesh>
+      </mesh>
 
-      {/* Main points — single instanced draw call */}
-      <instancedMesh ref={meshRef} args={[undefined, undefined, markers.length]}>
-        <sphereGeometry args={[0.012, 6, 6]} />
+      {/* Main point - small 3D burgundy sphere */}
+      <mesh>
+        <sphereGeometry args={[0.012, 8, 8]} />
         <meshBasicMaterial color={threeColors.burgundy} />
-      </instancedMesh>
-    </>
+      </mesh>
+
+      {/* Inner highlight - creates depth */}
+      <mesh position={[0.002, 0.002, 0.004]}>
+        <sphereGeometry args={[0.004, 6, 6]} />
+        <meshBasicMaterial
+          color={0xffffff}
+          transparent
+          opacity={0.6}
+        />
+      </mesh>
+    </group>
   );
 }
 
@@ -129,6 +119,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
   const globeRef = useRef<THREE.Group>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
+  // Load Earth texture with useTexture (has better error handling)
   const earthTexture = useTexture(EARTH_TEXTURE_URL);
 
   useFrame((_, delta) => {
@@ -139,6 +130,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
 
   return (
     <group ref={globeRef}>
+      {/* Earth globe with texture */}
       <Sphere args={[GLOBE_RADIUS, 48, 48]}>
         <meshStandardMaterial
           map={earthTexture}
@@ -149,7 +141,7 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
       </Sphere>
 
       {/* Subtle atmosphere glow */}
-      <Sphere args={[GLOBE_RADIUS + 0.05, 32, 32]}>
+      <Sphere args={[GLOBE_RADIUS + 0.05, 48, 48]}>
         <shaderMaterial
           transparent
           side={THREE.BackSide}
@@ -177,7 +169,13 @@ function Globe({ markers, onMarkerClick }: GlobeProps) {
         />
       </Sphere>
 
-      <LetterPoints markers={markers} onClick={onMarkerClick} />
+      {markers.map((marker) => (
+        <LetterPoint
+          key={marker.id}
+          marker={marker}
+          onClick={onMarkerClick}
+        />
+      ))}
 
       <OrbitControls
         enablePan={false}
@@ -217,6 +215,7 @@ interface GlobeSceneProps {
   onMarkerClick: (id: string) => void;
 }
 
+// Error fallback component
 function ErrorFallback({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="w-full h-[500px] md:h-[1000px] flex items-center justify-center">
@@ -241,13 +240,17 @@ export function GlobeScene({ markers, onMarkerClick }: GlobeSceneProps) {
 
   const handleRetry = useCallback(() => {
     setHasError(false);
-    setKey((k) => k + 1);
+    setKey((k) => k + 1); // Force remount of Canvas
   }, []);
 
   const handleContextLost = useCallback(() => {
     setHasError(true);
   }, []);
 
+  // R3F Canvas sometimes fails to paint its first frame when mounted
+  // off-screen (below the fold). Dispatching a resize event after mount
+  // forces R3F to recalculate size and trigger a render — the same thing
+  // that happens when the user manually resizes the window.
   useEffect(() => {
     const timer = setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
