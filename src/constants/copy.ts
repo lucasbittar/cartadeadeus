@@ -52,22 +52,14 @@ export const copy = {
     anonymous: 'Anônimo',
     from: 'de',
   },
-  countdown: {
-    date: '18 de Abril de 2026',
-    tagline: 'A contagem começou.',
-    subtitle: 'Carta de Adeus ao vivo. Pela primeira vez.',
-    shareButton: 'Compartilhar a espera',
-    units: {
-      days: 'dias',
-      hours: 'horas',
-      minutes: 'min',
-      seconds: 'seg',
-    },
-    tweet: {
-      template: 'Faltam {days} dias, {hours} horas e {minutes} minutos para @fresnorock ao vivo 🎸\n\nA contagem começou. #CartaDeAdeus\n\ncartadeadeus.cc',
-      templateShort: 'Faltam apenas {hours} horas e {minutes} minutos para @fresnorock ao vivo 🎸\n\nHoje é o dia. #CartaDeAdeus\n\ncartadeadeus.cc',
-    },
-    expired: 'O momento chegou.',
+  albumRelease: {
+    headline: 'A espera acabou.',
+    subtitle: 'Carta de Adeus está disponível em todas as plataformas.',
+    listenNow: 'Ouça agora',
+    spotify: 'Spotify',
+    deezer: 'Deezer',
+    spotifyUrl: 'https://open.spotify.com/album/33vakWPP6Ze0sxf8A5kcss',
+    deezerUrl: 'https://www.deezer.com/br/album/934452331',
   },
   mural: {
     emptyState: 'As primeiras cartas estão a caminho...',
