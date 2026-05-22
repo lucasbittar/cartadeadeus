@@ -43,3 +43,54 @@ export interface LetterMarker {
   lat: number;
   lng: number;
 }
+
+// ─────────────────────────── Tour dates ───────────────────────────
+
+export type TourDateStatus = 'on_sale' | 'sold_out' | 'cancelled' | 'free';
+
+export interface TourDate {
+  id: string;
+  event_date: string;
+  venue: string;
+  city: string;
+  ticket_url: string | null;
+  status: TourDateStatus;
+  created_at: string;
+}
+
+export interface TourDateInput {
+  event_date: string;
+  venue: string;
+  city: string;
+  ticket_url?: string | null;
+  status: TourDateStatus;
+}
+
+// ───────────────────────────── Videos ─────────────────────────────
+
+export interface Video {
+  id: string;
+  youtube_url: string;
+  youtube_id: string;
+  title: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface VideoInput {
+  youtube_url: string;
+}
+
+// ───────────────────────────── Tweets ─────────────────────────────
+
+export interface Tweet {
+  id: string;
+  tweet_url: string;
+  tweet_id: string;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface TweetInput {
+  tweet_url: string;
+}
