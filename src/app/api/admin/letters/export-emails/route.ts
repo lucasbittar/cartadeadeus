@@ -1,25 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createAdminSupabaseClient } from '@/lib/supabase/server';
+import { verifyAdmin } from '@/lib/admin-auth';
 
 export async function GET() {
   try {
     const supabase = await createServerSupabaseClient();
 
     // Verify admin
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const adminEmails = (process.env.ADMIN_EMAILS || '')
-      .split(',')
-      .map((e) => e.trim().toLowerCase())
-      .filter(Boolean);
-
-    if (!adminEmails.includes(user.email.toLowerCase())) {
+    if (!(await verifyAdmin(supabase))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

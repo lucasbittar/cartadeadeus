@@ -24,6 +24,9 @@ export default function AdminLayout({
   const navItems = [
     { href: '/admin', label: copy.admin.nav.dashboard },
     { href: '/admin/letters', label: copy.admin.nav.letters },
+    { href: '/admin/tour-dates', label: copy.admin.nav.tourDates },
+    { href: '/admin/videos', label: copy.admin.nav.videos },
+    { href: '/admin/tweets', label: copy.admin.nav.tweets },
   ];
 
   return (

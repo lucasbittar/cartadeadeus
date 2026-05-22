@@ -118,6 +118,27 @@ export default function AdminDashboardPage() {
               {stats?.flagged ?? 0} cartas sinalizadas
             </p>
           </a>
+          <a
+            href="/admin/tour-dates"
+            className="bg-background border border-muted-light rounded-lg px-4 py-3 hover:border-foreground transition-colors"
+          >
+            <span className="text-sm text-muted-dark">Gerenciar</span>
+            <p className="font-medium text-foreground">{copy.admin.nav.tourDates}</p>
+          </a>
+          <a
+            href="/admin/videos"
+            className="bg-background border border-muted-light rounded-lg px-4 py-3 hover:border-foreground transition-colors"
+          >
+            <span className="text-sm text-muted-dark">Gerenciar</span>
+            <p className="font-medium text-foreground">{copy.admin.nav.videos}</p>
+          </a>
+          <a
+            href="/admin/tweets"
+            className="bg-background border border-muted-light rounded-lg px-4 py-3 hover:border-foreground transition-colors"
+          >
+            <span className="text-sm text-muted-dark">Gerenciar</span>
+            <p className="font-medium text-foreground">{copy.admin.nav.tweets}</p>
+          </a>
         </div>
       </div>
     </div>

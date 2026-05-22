@@ -10,7 +10,9 @@ import { GlobeSection } from '@/components/globe/globe-section';
 import { LetterModal } from '@/components/letter/letter-modal';
 import { LetterPreviewModal } from '@/components/letter/letter-preview';
 import { ShareModal } from '@/components/share/share-modal';
+import { StoreBanner } from '@/components/store';
 import { copy } from '@/constants/copy';
+import { config } from '@/constants/config';
 
 const LettersMarquee = dynamic(
   () =>
@@ -25,6 +27,21 @@ const CountdownSection = dynamic(
     import('@/components/countdown').then(
       (mod) => mod.CountdownSection
     ),
+  { ssr: false }
+);
+
+const TourSection = dynamic(
+  () => import('@/components/tour').then((mod) => mod.TourSection),
+  { ssr: false }
+);
+
+const VideosSection = dynamic(
+  () => import('@/components/videos').then((mod) => mod.VideosSection),
+  { ssr: false }
+);
+
+const SocialSection = dynamic(
+  () => import('@/components/social').then((mod) => mod.SocialSection),
   { ssr: false }
 );
 
@@ -96,13 +113,25 @@ export default function HomePage() {
 
         {/* Globe section with matching mint background */}
         <div id="content" className="relative">
+          {/* Tour dates — surfaced high: live shows are time-sensitive */}
+          <TourSection />
+
           <GlobeSection />
 
           {/* Letters marquee section */}
           <LettersMarquee />
 
-          {/* Countdown section */}
+          {/* Latest news — curated tweets */}
+          <SocialSection />
+
+          {/* Latest YouTube videos */}
+          <VideosSection />
+
+          {/* Album release section */}
           <CountdownSection />
+
+          {/* Official store */}
+          <StoreBanner />
 
           <footer className="relative py-16 md:py-20 overflow-hidden bg-[#1A1A1A]">
             {/* Subtle texture overlay */}
@@ -148,6 +177,15 @@ export default function HomePage() {
                 <span className="hover:text-burgundy/60 transition-colors cursor-default">{copy.social.hashtag}</span>
                 <span className="text-burgundy/40">·</span>
                 <span className="hover:text-burgundy/60 transition-colors cursor-default">{copy.social.fresnoHandle}</span>
+                <span className="text-burgundy/40">·</span>
+                <a
+                  href={config.storeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-burgundy/60 transition-colors"
+                >
+                  {copy.store.footerLink}
+                </a>
               </div>
 
               {/* Legal links */}

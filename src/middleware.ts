@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createMiddlewareSupabaseClient } from '@/lib/supabase/middleware';
+import { isAdminAuthBypassed } from '@/lib/admin-bypass';
 
 // Allowed admin emails (comma-separated in env var)
 function getAdminEmails(): string[] {
@@ -34,11 +35,15 @@ const securityHeaders = {
 // - Data URLs (for images)
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // unsafe-eval needed for Three.js
+  // unsafe-eval needed for Three.js
+  "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:",
+  // pbs.twimg.com images come through here for the embedded tweets
   "img-src 'self' data: blob: https:",
   "connect-src 'self' https://*.supabase.co https://maps.googleapis.com wss://*.supabase.co",
+  // YouTube video lightbox (tweets render as plain HTML — no iframe needed)
+  "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -55,7 +60,8 @@ export async function middleware(request: NextRequest) {
   const isAdminLoginRoute = pathname === '/admin/login';
   const isAuthCallback = pathname === '/admin/auth/callback';
 
-  if (isAdminRoute && !isAdminLoginRoute && !isAuthCallback) {
+  // Dev-only: ADMIN_BYPASS_AUTH skips the login wall entirely (see admin-bypass.ts).
+  if (isAdminRoute && !isAdminLoginRoute && !isAuthCallback && !isAdminAuthBypassed()) {
     // Verify admin session
     const { supabase, response: supabaseResponse } =
       await createMiddlewareSupabaseClient(request);

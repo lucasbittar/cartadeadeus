@@ -4,6 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 import { Providers } from '@/components/providers';
 import { copy } from '@/constants/copy';
+import 'react-tweet/theme.css';
 import './globals.css';
 
 const playfair = Playfair_Display({

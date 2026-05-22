@@ -1,21 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient, createAdminSupabaseClient } from '@/lib/supabase/server';
-
-// Verify admin session helper
-async function verifyAdmin(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user?.email) return false;
-
-  const adminEmails = (process.env.ADMIN_EMAILS || '')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-
-  return adminEmails.includes(user.email.toLowerCase());
-}
+import { verifyAdmin } from '@/lib/admin-auth';
 
 export async function POST(request: NextRequest) {
   try {

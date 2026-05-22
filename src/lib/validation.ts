@@ -41,6 +41,49 @@ export const letterInputSchema = z.object({
 
 export type ValidatedLetterInput = z.infer<typeof letterInputSchema>;
 
+// Tour date input validation schema (admin)
+export const tourDateInputSchema = z.object({
+  event_date: z.string().min(1, 'Data é obrigatória'),
+  venue: z
+    .string()
+    .min(1, 'Casa de show é obrigatória')
+    .max(255, 'Nome muito longo')
+    .transform((v) => v.trim()),
+  city: z
+    .string()
+    .min(1, 'Cidade é obrigatória')
+    .max(255, 'Nome da cidade muito longo')
+    .transform((v) => v.trim()),
+  ticket_url: z
+    .union([z.string().url('Link de ingressos inválido'), z.literal(''), z.null()])
+    .optional()
+    .transform((v) => v || null),
+  status: z.enum(['on_sale', 'sold_out', 'cancelled', 'free']),
+});
+
+export type ValidatedTourDateInput = z.infer<typeof tourDateInputSchema>;
+
+// Video input validation schema (admin) — only the URL is user-supplied
+export const videoInputSchema = z.object({
+  youtube_url: z.string().url('Link do YouTube inválido'),
+});
+
+// Video update schema (admin) — title and/or ordering
+export const videoUpdateSchema = z.object({
+  title: z.string().max(255, 'Título muito longo').nullable().optional(),
+  sort_order: z.number().int().optional(),
+});
+
+// Tweet input schema (admin) — only the URL is user-supplied
+export const tweetInputSchema = z.object({
+  tweet_url: z.string().url('Link do tweet inválido'),
+});
+
+// Tweet update schema (admin) — only ordering
+export const tweetUpdateSchema = z.object({
+  sort_order: z.number().int().optional(),
+});
+
 // Helper to format Zod errors into a user-friendly message
 export function formatZodError(error: z.ZodError): string {
   return error.issues.map((issue) => issue.message).join(', ');
