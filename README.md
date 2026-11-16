@@ -37,7 +37,7 @@ Browser ──► Vercel CDN (s-maxage + stale-while-revalidate)
               └─► /api/share-image       Satori + Sharp, cached as immutable
 ```
 
-## Key decisions
+## Key decisions and tradeoffs
 
 **Split the letters API into three endpoints.** The first version sent every letter, content included, in one response, which would not survive launch traffic. The globe only needs coordinates, and the modal only needs one letter at a time. So the globe loads [`/api/letters/markers`](src/app/api/letters/markers/route.ts) (id, lat, lng), a click loads [`/api/letters/[id]`](src/app/api/letters/[id]/route.ts), and the feed pages through [`/api/letters`](src/app/api/letters/route.ts). The original brief is in [`prompt/letters-scalability.md`](prompt/letters-scalability.md).
 
@@ -47,7 +47,7 @@ Browser ──► Vercel CDN (s-maxage + stale-while-revalidate)
 
 **Store only city-level location (LGPD).** Coordinates are rounded to 2 decimal places, about 1.1 km, before they're validated and stored ([`roundCoordinate`](src/lib/utils.ts), [`src/lib/validation.ts`](src/lib/validation.ts)). The globe still looks right, and no letter can be traced to a street address. Before this change, coordinates were stored at full GPS precision.
 
-**Cache geocoding in memory.** City search and reverse geocoding go through an LRU cache keyed on rounded coordinates ([`src/lib/geocode-cache.ts`](src/lib/geocode-cache.ts)) to cut Google API cost during spikes. It resets on cold starts, which is an acceptable trade for zero extra infrastructure.
+**Cache geocoding in memory.** City search and reverse geocoding go through an LRU cache keyed on rounded coordinates ([`src/lib/geocode-cache.ts`](src/lib/geocode-cache.ts)) to cut Google API cost during spikes. It resets on cold starts, which is an acceptable tradeoff for zero extra infrastructure.
 
 **Performance work that was reverted.** A compressed earth texture (1.2 MB to 229 KB) broke globe loading and was rolled back (`b8fd587`), and an instanced-mesh marker rewrite made markers flash, so per-marker rendering came back (`401dbf8`). The mobile hero image cut (895 KB to 309 KB) stayed. Next step: a texture format the globe loads reliably, such as KTX2.
 
